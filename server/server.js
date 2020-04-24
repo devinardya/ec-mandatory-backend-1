@@ -29,23 +29,29 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
- console.log('a user connected');
+    console.log('a user connected');
 
- io.emit('message', chat);
-
- socket.on('new_message', (data) => {
-     data.id = uuid.v4();
-     console.log(data)
-     socket.broadcast.emit('new_message', data);
-     chat.push(data);
-
-     saveChat()
-     .then( () => {
-         res.status(201).send(chat)
-     });
- })
-
+    //io.emit('message', chat);
    
+    socket.emit('message', chat)
+  
+  
+
+    socket.on('new_message', (data) => {
+        data.id = uuid.v4();
+        console.log(data)
+        socket.broadcast.emit('new_message', data);
+        chat.push(data);
+
+        saveChat()
+        .then( () => {
+            res.status(201).send(chat)
+        });
+    })
+
+    socket.on('disconnect', () => {
+        io.emit('user disconnected');
+      });
 });
 
 

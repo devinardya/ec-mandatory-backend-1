@@ -1,32 +1,35 @@
 import React, {useEffect, useState} from 'react';
 import io from 'socket.io-client';
+import { DataMessagesHistory } from '../socket';
 
 let socket = io('localhost:3000');
 
 const Chat = ({location}) => {
 
     const [input, updateInput] = useState("");
-    const [text, updateText] = useState([]);
+    const [messages, updateMessages] = useState([]);
     let name = location.state.user;
+   
+    useEffect(() => {
+        DataMessagesHistory()
+        .then( chatHistory => {
+            console.log(chatHistory)
+            updateMessages(chatHistory);
+        })
+
+    }, []);
+
 
     useEffect( () => {
-        socket.on('connect', function(){
-            console.log("CONNECTED")
-        })
-        //console.log("USERNAME", location.state.user)
-       socket.on('message', (data) => {
-            console.log("DATA HISTORY",data)
-            updateText(data);
-        }); 
-
         socket.on('new_message', function(data){
             console.log("new_message", data);
             //cb(null, data);
             let message = data;
-            let copyMessage = [...text];		
-            updateText([...copyMessage, message]);
+            let copyMessage = [...messages];		
+            updateMessages([...copyMessage, message]);
           });
-    }, [text])
+    }, [messages]) 
+
 
     const onChange = (e) => {
         let value = e.target.value;
@@ -43,9 +46,9 @@ const Chat = ({location}) => {
         })
         updateInput("");
         let message = {username: name, content: input};
-        let copyMessage = [...text];	
+        let copyMessage = [...messages];	
         //copyMessage.splice(0, 1);	
-        updateText([...copyMessage, message]);
+        updateMessages([...copyMessage, message]);
         
     }
 
@@ -57,7 +60,7 @@ const Chat = ({location}) => {
                  <button></button>
              </form>
              <div>
-            {text.map(data => {
+            {messages.map(data => {
                 let pointKey;
                 if (data.username === name){
                       pointKey = "messages-"+ Math.round(Math.random() * 99999999999);

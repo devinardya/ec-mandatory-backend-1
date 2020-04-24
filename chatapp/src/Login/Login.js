@@ -42,7 +42,7 @@ const Login = () => {
                     <div className="block__loginPage--form-bottom">
                         <input className="block__loginPage--input-box" type="text" placeholder="Username" onChange={onChange} value={username}/>
                     </div>
-                    <button className="block__loginPage--login-button">Log in</button>
+                    <button className="block__loginPage--login-button">Enter chat</button>
                 </form>
             </div>
 }
