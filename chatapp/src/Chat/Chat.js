@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
 import { DataMessagesHistory } from '../socket';
 import '../Chat/chat.scss';
@@ -10,6 +10,7 @@ const Chat = ({location}) => {
     const [input, updateInput] = useState("");
     const [messages, updateMessages] = useState([]);
     let name = location.state.user;
+    const chatWindow = useRef(null);
    
     useEffect(() => {
         DataMessagesHistory()
@@ -19,6 +20,12 @@ const Chat = ({location}) => {
         })
 
     }, []);
+
+    const scrollToBottom = () => {
+        chatWindow.current.scrollIntoView({ behavior: "smooth" })
+      }
+    
+      useEffect(scrollToBottom, [messages]);
 
 
     useEffect( () => {
@@ -91,9 +98,10 @@ const Chat = ({location}) => {
                                             <p className="block__chatPage__mainbar--chatbox--message--username">{data.username}</p>
                                             <p className="block__chatPage__mainbar--chatbox--message--text">{data.content}</p>
                                         </div>
-                                    </div>
+                                    </div> 
                             })
                         } 
+                        <div ref={chatWindow} />
                     </div>
                     <div className="block__chatPage__mainbar--form">
                         <form onSubmit = {onSubmit}>

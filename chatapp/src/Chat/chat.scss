@@ -122,7 +122,6 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
         text-align: left;
         padding: 15px;
         width: 80%;
-        border-radius: 0 40px 40px 40px;
     }
 
     @mixin username {
@@ -161,6 +160,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                 .block__chatPage__mainbar--chatbox--message--blockText {
                     margin-left: 45px;
                     @include blocktext($color-tertiary-light);
+                    border-radius: 0 40px 40px 40px;
 
                     .block__chatPage__mainbar--chatbox--message--username {
                         padding-left: 20px;
@@ -185,6 +185,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                 .block__chatPage__mainbar--chatbox--message--blockText {
                     margin-right: 45px;
                     @include blocktext($color-tertiary-light-sender);
+                    border-radius: 40px 0px 40px 40px;
                     
                     .block__chatPage__mainbar--chatbox--message--username {
                         padding-left: 30px;
