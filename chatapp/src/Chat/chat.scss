@@ -5,12 +5,12 @@
     box-sizing: border-box;
   }
 
-$color-primary: #8ea8c3ff;
-$color-secondary: #3caeff;
-$color-secondary-light: rgb(255, 255, 255);
+$color-tertiary-light-button: #8ea8c3ff;
+$color-primary: #3caeff;
+$color-primary-light: rgb(255, 255, 255);
 $color-text-light: #ffa84e;
-$color-tertiary-light: #a7dbf3;
-$color-tertiary-light-sender: #fde1a3;
+$color-secondary-light: #a7dbf3;
+$color-secondary-light-sender: #fde1a3;
 $color-text-dark: #525252;
 $color-text-dark2: rgb(12, 49, 129);
 
@@ -32,7 +32,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
     .block__chatPage__sidebar {
         width: 20%;
         height: 100%;
-        background-color: $color-secondary;
+        background-color: $color-primary;
         /* background: url(../Design/sidebar-03-03.svg); 
         filter: brightness(0.9); */
         background-size: cover;
@@ -52,9 +52,10 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
             border-bottom: 1px dashed #fff ;
             margin-bottom: 30px;
             h2 {
-                color: $color-secondary-light;
+                color: $color-primary-light;
                 font-weight: bold;
                 margin-bottom: 10px;
+                font-size: 20px;
             }
         }
 
@@ -64,7 +65,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
         }
 
         @mixin p-sidebar-style {
-            color: $color-secondary-light;
+            color: $color-primary-light;
             margin-bottom: 10px;
         }
 
@@ -138,7 +139,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
     .block__chatPage__mainbar {
         width: 80%;
         height: 100%;
-        background-color: $color-secondary-light;
+        background-color: $color-primary-light;
         display: flex;
         flex-flow: column wrap;
         justify-content: center;
@@ -146,9 +147,10 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 
         .block__chatPage__mainbar--chatbox {
             width: 100%;
-            height: 85%;
-            padding: 35px 35px 0 35px;
+            height: calc(85% - 35px);
+            padding: 0px 35px;
             overflow: scroll;
+            margin-top: 35px;
 
             .block__chatPage__mainbar--chatbox--message--incoming{
                 @include chatbox-message(flex-start);
@@ -159,7 +161,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 
                 .block__chatPage__mainbar--chatbox--message--blockText {
                     margin-left: 45px;
-                    @include blocktext($color-tertiary-light);
+                    @include blocktext($color-secondary-light);
                     border-radius: 0 40px 40px 40px;
 
                     .block__chatPage__mainbar--chatbox--message--username {
@@ -184,7 +186,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 
                 .block__chatPage__mainbar--chatbox--message--blockText {
                     margin-right: 45px;
-                    @include blocktext($color-tertiary-light-sender);
+                    @include blocktext($color-secondary-light-sender);
                     border-radius: 40px 0px 40px 40px;
                     
                     .block__chatPage__mainbar--chatbox--message--username {
@@ -231,8 +233,8 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                     height: 40px;
                     margin-left: 10px;
                     border: none;
-                    background-color: $color-primary;
-                    color: $color-secondary-light;
+                    background-color: $color-tertiary-light-button;
+                    color: $color-primary-light;
                     font-size: 14px;
                 }
             }

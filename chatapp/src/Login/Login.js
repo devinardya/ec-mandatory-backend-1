@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
 import { Redirect } from 'react-router-dom';
+import io from 'socket.io-client';
 import '../Login/login.scss';
 import { AiFillWechat } from "react-icons/ai";
 import { IoMdLogIn } from 'react-icons/io';
 
+let socket = io('localhost:3000');
 
 const Login = () => {
 
@@ -22,6 +24,9 @@ const Login = () => {
         updateStatus(true);
         updateName(username);
         updateUsername("");
+
+        socket.emit('adduser', username);
+        socket.emit('addRoom', 'general')
     }
 
     if(status) {

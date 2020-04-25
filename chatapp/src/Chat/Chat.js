@@ -2,6 +2,7 @@ import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
 import { DataMessagesHistory } from '../socket';
 import '../Chat/chat.scss';
+import { Redirect } from 'react-router-dom';
 
 let socket = io('localhost:3000');
 
@@ -9,8 +10,35 @@ const Chat = ({location}) => {
 
     const [input, updateInput] = useState("");
     const [messages, updateMessages] = useState([]);
+    const [room, updateRoom] = useState('general');
+    const [chatRooms, updateChatRooms] =  useState([]);
+    const [loginStatus, updateLoginStatus] = useState(true);
     let name = location.state.user;
     const chatWindow = useRef(null);
+
+    useEffect( () => {
+        // on connection to server, ask for user's name with an anonymous callback
+        socket.emit('adduser', name);
+        console.log(room)
+        socket.emit('addRoom', room)
+    }, [name, room])
+
+    useEffect( () => {
+        socket.on('updatechat', function (username, data) {
+            console.log(username, data)
+             });
+    
+            socket.on('updateChat', (username, text) => {
+                console.log(username, text)
+            })
+    }, [])
+
+    useEffect( () => {
+        socket.on('updaterooms', function(rooms, current_room) {
+            updateChatRooms([...chatRooms, current_room])
+           console.log(rooms, current_room )
+        });
+    }, [chatRooms])
    
     useEffect(() => {
         DataMessagesHistory()
@@ -51,13 +79,23 @@ const Chat = ({location}) => {
         socket.emit("new_message",{
             username: name,
             content: input,
+            chatRoom: room
         })
         updateInput("");
         let message = {username: name, content: input};
         let copyMessage = [...messages];	
         //copyMessage.splice(0, 1);	
         updateMessages([...copyMessage, message]);
-        
+    }
+
+    const logout = () => {
+        socket.close();
+        console.log("DISCONNECTED")
+        updateLoginStatus(false);
+    }
+
+    if (!loginStatus) {
+        return <Redirect to="/"/>
     }
 
     return <div className="block__chatPage">
@@ -74,9 +112,13 @@ const Chat = ({location}) => {
                     </div>
                     <div className="block__chatPage__sidebar--roomlist">
                         <h3>Room list</h3>
-                        <p>General</p>
-                        <p>Outside school</p>
-                        <p>Random</p>
+                        {chatRooms.map(room => {
+                            return <p key={room.id}>{room.room}</p>
+                        })
+                        }
+                    </div>
+                    <div>
+                        <button onClick={logout}>Leave chat</button>
                     </div>
                 </div>
                 <div className="block__chatPage__mainbar">
