@@ -36,7 +36,7 @@ const Login = () => {
                 <form className = "block__loginPage--form" onSubmit= {onSubmit}>
                     <div className="block__loginPage--form-top">
                         <span className="block__loginPage--login-icon"><AiFillWechat className ="icons" size="60px" color="orange" /></span> 
-                        <h3>Welcome!</h3>
+                        <h3>Welcome</h3>
                         <h5>Please log in to join the chat room!</h5>
                     </div>
                     <div className="block__loginPage--form-bottom">

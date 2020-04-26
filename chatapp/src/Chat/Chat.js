@@ -15,6 +15,7 @@ const Chat = ({location}) => {
     const [chatRooms, updateChatRooms] =  useState([]);
     const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
+    const [incomingUser, updateIncomingUser] = useState("");
     let name = location.state.user;
     const chatWindow = useRef(null);
    
@@ -37,10 +38,11 @@ const Chat = ({location}) => {
                 updateChatRooms([...copyData, current_room])
                 console.log(copyData)
             })
-            socket.on('message', chatHistory =>{
-                console.log("message", chatHistory);
+            socket.on('savedMessage', chatHistory =>{
+                console.log("savedMessage", chatHistory);
                 updateMessages(chatHistory); 
             })
+            
         })
        /*  .then( () => {
             socket.on('updaterooms', current_room =>{
@@ -58,17 +60,30 @@ const Chat = ({location}) => {
         }) */
 
       
-    }, [name, room]);
+    }, [name, room, updateUsers, updateChatRooms]);
+
+    useEffect(() => {
+        console.log("INCOMING USER")
+        socket.on('incomingUser', data => {
+            console.log(data.text);
+            updateIncomingUser(data.text)
+        })
+    }, [updateIncomingUser])
 
 
     const scrollToBottom = () => {
-        chatWindow.current.scrollIntoView({ behavior: "smooth" })
+
+        const scrollHeight = chatWindow.current.scrollHeight;
+        chatWindow.current.scrollTop = scrollHeight;
+
+        //chatWindow.current.scrollIntoView({ behavior: "smooth" })
       }
     
-      useEffect(scrollToBottom, [messages]);
+    useEffect(scrollToBottom, [messages]);
 
 
     useEffect( () => {
+        console.log("getting new mesasage from the server")
         socket.on('new_message', function(data){
             console.log("new_message", data);
             //cb(null, data);
@@ -133,13 +148,13 @@ const Chat = ({location}) => {
                     </div>
                     <div className="block__chatPage__sidebar--logoutButton">
                         <button onClick={logout}>
-                            <IoMdLogOut className="block__chatPage__sidebar--logoutButton--icon" size="16px"/>
+                            <IoMdLogOut className="block__chatPage__sidebar--logoutButton--icon" size="20px"/>
                             Log out
                         </button>
                     </div>
                 </div>
                 <div className="block__chatPage__mainbar">
-                    <div className="block__chatPage__mainbar--chatbox">
+                    <div className="block__chatPage__mainbar--chatbox" ref={chatWindow}  >
                         {messages.map(data => {
                             let pointKey;
                             let boxClassName;
@@ -160,7 +175,8 @@ const Chat = ({location}) => {
                                     </div> 
                             })
                         } 
-                        <div ref={chatWindow} />
+                        {incomingUser}
+                        <div /* ref={chatWindow}  *//>
                     </div>
                     <div className="block__chatPage__mainbar--form">
                         <form onSubmit = {onSubmit}>

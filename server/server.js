@@ -44,129 +44,88 @@ app.get('/', (req, res) => {
  res.send('Server is running');
 });
 
-let usernames = {};
-let rooms = ["general"]
 
 io.on('connect', (socket) => {
     console.log('a user connected');
     //io.emit('message', chat);
 
-  /*   socket.join('general', () => {
-        socket.emit('updatechat', 'SERVER', 'you have connected to ' + 'general');
-        console.log("THIS IS JOIN", socket.rooms)
-        io.sockets.in('general').emit('message', chat);
-        //socket.broadcast.to('general').emit('updatechat', {text: name + " has joined"})
-        
-        let roomObj = {
-            room: 'general',
-            id : uuid.v4(),
-        }
-     
-        //socket.emit('updaterooms', roomObj);
-
-        socket.broadcast.to('general').emit('message', chat)
-        io.sockets.in('general').emit('updaterooms', roomObj);
-       
-        //socket.broadcast.to(room).emit('updatechat', {text: name + " has joined"})
-    })   */
-
     socket.on('join', ({name, room}) => {
         //const {error, user} = addUser({ id:socket.id, name, room})
-        console.log(name, room)
+        console.log("JOIN", name, room)
         socket.join(room, () => {
-            socket.broadcast.to(room).emit('updatechat', {text: name + " has joined"})
-            console.log("THIS IS JOIN", socket.rooms)
-            socket.broadcast.to(room).emit('message', chat)
-            io.sockets.in(room).emit('message', chat);
-            
-            let roomObj = {
-                room: room,
-                id : uuid.v4()
-            }
-
-            let userObj = {
-                name: name,
-                id : uuid.v4()
-            }
-    
-            //socket.broadcast.to(room).emit('message', chat)
-            io.sockets.in(room).emit('updaterooms', roomObj);
-            
-           console.log(userList)
-           let checkNameTemp;
-           let checkName;
-           checkName = false;
-            userList.map(user => { 
-                console.log(user)
-                console.log('current name',name)
-                checkNameTemp = user.name.includes(name);
-                if (checkNameTemp === true){
-                    checkName = true;
-                }
-                // console.log("checkName", checkName)
-                
-            });
-            console.log("name status", checkName)
-            if(userList.length === 0){
-                console.log("adding user")
-                userList.push(userObj);
-                saveUser();
-            }  else if (checkName === false) {
-                console.log("adding user 2")
-                userList.push(userObj);
-                saveUser();
-            }
-
-            io.sockets.in(room).emit('updateUser', userList);
-
+            socket.broadcast.to(room).emit('incomingUser', {text: name + " has joined"})
+            console.log("THIS IS JOIN", room)
         })
-       // socket.emit('updatechat', 'SERVER', 'you have connected to' + room);
+       
+         //sending notification that a new user has entered the chatroom
+       /*   socket.broadcast.to(room).emit('incomingUser', {text: name + " has joined"})
+         console.log("THIS IS JOIN", socket.rooms) */
+
+         // Sending chat history from json saved file
+         // not working if one of below code is deleted
+         //socket.broadcast.to(room).emit('savedMessage', chat)
+         io.sockets.in(room).emit('savedMessage', chat);
+         
+         //creating new room object to be sent to the client
+         let roomObj = {
+             room: room,
+             id : uuid.v4()
+         }
+
+         //creating new user object to be sent to the client
+         let userObj = {
+             name: name,
+             id : uuid.v4()
+         }
+ 
+         //sending notification about the current chat room
+         //socket.broadcast.to(room).emit('message', chat)
+         io.sockets.in(room).emit('updaterooms', roomObj);
+
+         // adding the user to the saved file, skipping name that is already in the data
+         
+        console.log(userList)
+        let checkNameTemp;
+        let checkName;
+        checkName = false;
+         userList.map(user => { 
+             console.log(user)
+             console.log('current name',name)
+             checkNameTemp = user.name.includes(name);
+             if (checkNameTemp === true){
+                 checkName = true;
+             }
+             // console.log("checkName", checkName)
+             
+         });
+
+         console.log("name status", checkName)
+         if(userList.length === 0){
+             console.log("adding user")
+             userList.push(userObj);
+             saveUser();
+         }  else if (checkName === false) {
+             console.log("adding user 2")
+             userList.push(userObj);
+             saveUser();
+         }
+
+         // sending user list to the client
+         console.log(userList)
+         io.sockets.in(room).emit('updateUser', userList);
        
 
         
     }) 
 
-	/* socket.on('adduser', function(username){
-        socket.on('addRoom', room => {
-            console.log(username, room)
-            currentRoom = room;
-            socket.username = username;
-            // store the room name in the socket session for this client
-            socket.room = room;
-            // add the client's username to the global list
-            usernames[username] = username;
-            //console.log(usernames);
-            let roomObj = {
-                room: room,
-                id : uuid.v4()
-            }
-
-            // send client to room 1
-            socket.join(room);
-            // echo to client they've connected
-            socket.emit('updatechat', 'SERVER', 'you have connected to' + room);
-            // echo to room 1 that a person has connected to their room
-            socket.broadcast.to(room).emit('updateChat', 'SERVER', username + ' has connected to this room');
-            socket.emit('updaterooms', rooms, roomObj);
-        }); 
-	}); */
-
-
-  /*   socket.on('join', ({name, room}) => {
-        console.log(name, room);
-        theRoom = room
-    })
-
-    socket.broadcast.to(theRoom).emit('function', "hi room") */
-   
-    //socket.emit('message', chat)
-  
+    // when getting new message from client, saved it to file and send it back to 
+    // the client to be added on the current chat
     socket.on('new_message', (data) => {
         data.id = uuid.v4();
         console.log(data)
         socket.broadcast.to(data.chatRoom).emit('new_message', data)
         //io.sockets.in(data.chatRoom).emit('new_message', data);
-        //socket.broadcast.emit('new_message', data);
+        socket.broadcast.emit('new_message', data);
         chat.push(data);
 
         saveChat();
