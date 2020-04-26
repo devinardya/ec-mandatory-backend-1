@@ -1,11 +1,10 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
-import { DataMessagesHistory } from '../socket';
 import { IoIosAddCircleOutline, IoMdLogOut} from 'react-icons/io'
 import '../Chat/chat.scss';
 import { Redirect } from 'react-router-dom';
 
-let socket = io('localhost:3000');
+let socket; 
 
 const Chat = ({location}) => {
 
@@ -18,48 +17,36 @@ const Chat = ({location}) => {
     const [incomingUser, updateIncomingUser] = useState("");
     let name = location.state.user;
     const chatWindow = useRef(null);
+  
    
+    // useEffect for joining
     useEffect( () => {
-        console.log("this got triggered")
-        DataMessagesHistory()
-        .then( () => {
-            console.log("it came to this")
-            socket.emit('join', {name, room});
-            socket.on('updatechat', data => {
-                console.log(data)
-            }) 
-            socket.on('updateUser', userlist => {
-                console.log(userlist)
-                updateUsers(userlist);
-            })
-            socket.on('updaterooms', current_room =>{
-                console.log("update room", current_room);
-                let copyData = [...chatRooms]
-                updateChatRooms([...copyData, current_room])
-                console.log(copyData)
-            })
-            socket.on('savedMessage', chatHistory =>{
-                console.log("savedMessage", chatHistory);
-                updateMessages(chatHistory); 
-            })
-            
-        })
-       /*  .then( () => {
-            socket.on('updaterooms', current_room =>{
-            console.log("update room", current_room);
-            let copyData = [...chatRooms]
-            updateChatRooms([...copyData, current_room])
-            console.log(copyData)
-            })
-        })
-        .then( () => {
-            socket.on('message', chatHistory =>{
-            console.log("message", chatHistory);
-            updateMessages(chatHistory); 
-            })
-        }) */
+        socket = io('localhost:3000')
+        console.log("1. Joining")
+ 
+        // Emitting to the server, which user and room to join
+        socket.emit('join', {name, room});
 
-      
+
+        socket.on('updatechat', data => {
+            console.log(data)
+        }) 
+        socket.on('updateUser', userlist => {
+            console.log(userlist)
+            updateUsers(userlist);
+        })
+        socket.on('updaterooms', current_room =>{
+            console.log("update room", current_room);
+            updateChatRooms(current_room)
+            /* let copyData = [...chatRooms]
+            updateChatRooms([...copyData, current_room])
+            console.log(copyData) */
+        })
+        socket.on('savedMessage', chatHistory =>{
+            console.log("savedMessage", chatHistory);
+            updateMessages(chatHistory); 
+        })
+ 
     }, [name, room, updateUsers, updateChatRooms]);
 
     useEffect(() => {
@@ -84,6 +71,7 @@ const Chat = ({location}) => {
 
     useEffect( () => {
         console.log("getting new mesasage from the server")
+        // socket = io('localhost:3000')
         socket.on('new_message', function(data){
             console.log("new_message", data);
             //cb(null, data);
@@ -99,9 +87,10 @@ const Chat = ({location}) => {
         updateInput(value);
     }
 
+    // sending message
     const onSubmit = (e) => {
         e.preventDefault();
-
+        // socket = io('localhost:3000')
         //socket.emit('new_message', input);
         socket.emit("new_message",{
             username: name,
@@ -116,6 +105,7 @@ const Chat = ({location}) => {
     }
 
     const logout = () => {
+        // socket = io('localhost:3000')
         socket.close();
         console.log("DISCONNECTED")
         updateLoginStatus(false);
