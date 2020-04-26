@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
 import { DataMessagesHistory } from '../socket';
+import { IoIosAddCircleOutline, IoMdLogOut} from 'react-icons/io'
 import '../Chat/chat.scss';
 import { Redirect } from 'react-router-dom';
 
@@ -12,42 +13,53 @@ const Chat = ({location}) => {
     const [messages, updateMessages] = useState([]);
     const [room, updateRoom] = useState('general');
     const [chatRooms, updateChatRooms] =  useState([]);
+    const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
     let name = location.state.user;
     const chatWindow = useRef(null);
-
-    useEffect( () => {
-        // on connection to server, ask for user's name with an anonymous callback
-        socket.emit('adduser', name);
-        console.log(room)
-        socket.emit('addRoom', room)
-    }, [name, room])
-
-    useEffect( () => {
-        socket.on('updatechat', function (username, data) {
-            console.log(username, data)
-             });
-    
-            socket.on('updateChat', (username, text) => {
-                console.log(username, text)
-            })
-    }, [])
-
-    useEffect( () => {
-        socket.on('updaterooms', function(rooms, current_room) {
-            updateChatRooms([...chatRooms, current_room])
-           console.log(rooms, current_room )
-        });
-    }, [chatRooms])
    
-    useEffect(() => {
+    useEffect( () => {
+        console.log("this got triggered")
         DataMessagesHistory()
-        .then( chatHistory => {
-            console.log(chatHistory)
-            updateMessages(chatHistory);
+        .then( () => {
+            console.log("it came to this")
+            socket.emit('join', {name, room});
+            socket.on('updatechat', data => {
+                console.log(data)
+            }) 
+            socket.on('updateUser', userlist => {
+                console.log(userlist)
+                updateUsers(userlist);
+            })
+            socket.on('updaterooms', current_room =>{
+                console.log("update room", current_room);
+                let copyData = [...chatRooms]
+                updateChatRooms([...copyData, current_room])
+                console.log(copyData)
+            })
+            socket.on('message', chatHistory =>{
+                console.log("message", chatHistory);
+                updateMessages(chatHistory); 
+            })
         })
+       /*  .then( () => {
+            socket.on('updaterooms', current_room =>{
+            console.log("update room", current_room);
+            let copyData = [...chatRooms]
+            updateChatRooms([...copyData, current_room])
+            console.log(copyData)
+            })
+        })
+        .then( () => {
+            socket.on('message', chatHistory =>{
+            console.log("message", chatHistory);
+            updateMessages(chatHistory); 
+            })
+        }) */
 
-    }, []);
+      
+    }, [name, room]);
+
 
     const scrollToBottom = () => {
         chatWindow.current.scrollIntoView({ behavior: "smooth" })
@@ -105,20 +117,25 @@ const Chat = ({location}) => {
                     </div>
                     <div className="block__chatPage__sidebar--userlist">
                         <h3>Room user</h3>
-                        <p>Nono</p>
-                        <p>Bebe</p>
-                        <p>Bubu</p>
-                        <p>Jo</p>
+                        {users.map(user => {
+                            //console.log(user)
+                            return <p key={user.id}>{user.name}</p>
+                        })}
                     </div>
                     <div className="block__chatPage__sidebar--roomlist">
                         <h3>Room list</h3>
+                        <button><IoIosAddCircleOutline size="24px"/></button>
                         {chatRooms.map(room => {
+                            //console.log(room)
                             return <p key={room.id}>{room.room}</p>
                         })
                         }
                     </div>
-                    <div>
-                        <button onClick={logout}>Leave chat</button>
+                    <div className="block__chatPage__sidebar--logoutButton">
+                        <button onClick={logout}>
+                            <IoMdLogOut className="block__chatPage__sidebar--logoutButton--icon" size="16px"/>
+                            Log out
+                        </button>
                     </div>
                 </div>
                 <div className="block__chatPage__mainbar">

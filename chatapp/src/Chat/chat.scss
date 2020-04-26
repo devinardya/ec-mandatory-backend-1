@@ -67,6 +67,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
         @mixin p-sidebar-style {
             color: $color-primary-light;
             margin-bottom: 10px;
+            font-size: 14px;
         }
 
         .block__chatPage__sidebar--userlist{
@@ -87,13 +88,49 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
             width: 100%;
             border-bottom: 1px dashed #fff ;
             margin-bottom: 20px;
+            position: relative;
 
             h3{
                 @include h3-sidebar-style();
             }
+
+            button {
+                background: transparent;
+                border:none;
+                position: absolute;
+                top: 2px;
+                right: 0;
+                color: $color-text-dark;
+
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+
             p {
                 @include p-sidebar-style();
             }
+        }
+
+        .block__chatPage__sidebar--logoutButton {
+            position: relative;
+
+            button {
+                border: none;
+                font-size: 14px;
+                background-color: transparent;
+                padding-left: 20px;
+                color: $color-text-dark;
+                font-weight: bold;
+            }
+
+            .block__chatPage__sidebar--logoutButton--icon {
+                position: absolute;
+                top: 4px;
+                left: 0;
+                color: $color-text-dark;
+            }
+            
         }
     }
 

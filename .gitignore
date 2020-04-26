@@ -10,7 +10,8 @@
 /coverage
 
 # production
-/build
+/chatapp/build
+/design
 
 # misc
 .DS_Store
