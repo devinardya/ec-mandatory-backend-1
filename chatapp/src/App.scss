@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP:400,700|Roboto+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP|Poppins:400,700&display=swap');
 * {
     margin: 0;
     padding: 0;
@@ -15,7 +15,7 @@ $color-text-light: #cbf7edff;
 
 $width-button: 150px;
 
-$RobotoMono : 'Roboto Mono', monospace;
+$Poppins : 'Poppins', sans-serif;
 $NotoSansJP : 'Noto Sans JP', sans-serif;
 
 .App {

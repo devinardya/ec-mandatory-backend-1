@@ -44,6 +44,8 @@ app.get('/', (req, res) => {
  res.send('Server is running');
 });
 
+let activeUser = [];
+
 
 io.on('connect', (socket) => {
     console.log('0. User connected to server');
@@ -52,6 +54,7 @@ io.on('connect', (socket) => {
     // getting an emit from client.
     // handling "join" emit
     socket.on('join', ({name, room}) => {
+     
         //const {error, user} = addUser({ id:socket.id, name, room})
         console.log("1. User joining chat. User ", name, " in room ",room)
         socket.join(room, () => {
@@ -62,12 +65,42 @@ io.on('connect', (socket) => {
                 chatRoom: room,
                 id: uuid.v4()
             }
+
+            let checkNameTemp;
+            let checkName;
+             checkName = false;
+             activeUser.map(user => { 
+             //console.log(user)
+             //console.log('current name',name)
+             checkNameTemp = user.includes(name);
+             if (checkNameTemp === true){
+                 checkName = true;
+             }
+             // console.log("checkName", checkName)
+             
+            });
+
+            if(activeUser.length === 0){
+                //console.log("adding user")
+                activeUser.push(name)
+                
+            }  else if (checkName === false) {
+                //console.log("adding user 2")
+                activeUser.push(name);
+                
+            }
+
+            
+            console.log("active users now", activeUser);
+            io.in(room).emit('activeUsers', activeUser);
+           
             socket.to(room).emit('incomingUser', grettingObj);
             //socket.broadcast.emit('incomingUser', grettingObj)
             //io.sockets.in(room).emit('incomingUser', {text: name + " has joined"});
             console.log("THIS IS JOIN", room)
         })
        
+
       
          // Sending chat history from json saved file
          // not working if one of below code is deleted
@@ -123,8 +156,8 @@ io.on('connect', (socket) => {
          // sending user list to the client
          console.log(userList)
          io.in(room).emit('updateUser', userList);
-         //io.sockets.emit('updateUser', userList);
-       
+         //io.sockets.emit('updateUser', userList); 
+
     }) 
 
     // when getting new message from client, saved it to file and send it back to 
@@ -142,9 +175,25 @@ io.on('connect', (socket) => {
         saveChat();
     })
 
+    socket.on('leave', ({name, room}) => {
+
+        socket.leave(room, () => {
+            console.log("user " + name + " is leaving")
+            const index = activeUser.indexOf(name);
+            if (index > -1) {
+            activeUser.splice(index, 1);
+            socket.to(room).emit('activeUsers', activeUser);
+            //io.in(room).emit('activeUsers', activeUser);
+            }
+    
+        });
+    })
+
+   
+
     socket.on('disconnect', () => {
         io.emit('user disconnected');
-        console.log("user has left")
+        console.log("user has disconnected")
       });
 });
 

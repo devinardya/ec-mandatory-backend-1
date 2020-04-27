@@ -67,3 +67,12 @@ function getNewMessages(socket, cb) {
 
 export {getNewMessages};
 
+function getActiveUsers(socket, cb) {
+    socket.on('activeUsers', data => {
+        console.log("active_users", data);
+        cb(null, data); 
+    })
+}
+
+export {getActiveUsers};
+

@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
-import {updateUser, updateCurrentRoom, getChatHistory, getIncomingUser, getNewMessages} from '../socket';
-import { IoIosAddCircleOutline, IoMdLogOut} from 'react-icons/io'
+import {updateUser, updateCurrentRoom, getChatHistory, getIncomingUser, getNewMessages, getActiveUsers} from '../socket';
+import { IoIosAddCircleOutline, IoMdLogOut, IoIosContact} from 'react-icons/io'
 import '../Chat/chat.scss';
 import { Redirect } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ const Chat = ({location}) => {
     const [messages, updateMessages] = useState([]);
     const [room, updateRoom] = useState('general');
     const [chatRooms, updateChatRooms] =  useState([]);
+    const [activeUserNow, updateActiveUsersNow] = useState([])
     const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
     let name = location.state.user;
@@ -49,7 +50,13 @@ const Chat = ({location}) => {
 
     }, [])
 
- 
+    useEffect( () => {
+        console.log("ACTIVE USER")
+        getActiveUsers(socket, (err, data) => {
+            console.log("active users now", data)
+            updateActiveUsersNow(data)
+        })
+    }, [])
 
     useEffect(() => {
         console.log("INCOMING USER")
@@ -104,9 +111,11 @@ const Chat = ({location}) => {
     }
 
     const logout = () => {
+        socket.emit('leave', {name, room});
         socket.close();
         console.log("DISCONNECTED")
         updateLoginStatus(false);
+        
     }
 
     if (!loginStatus) {
@@ -119,10 +128,13 @@ const Chat = ({location}) => {
                         <h2>Welcome, {name}</h2>
                     </div>
                     <div className="block__chatPage__sidebar--userlist">
-                        <h3>Room user</h3>
                         {users.map(user => {
-                            //console.log(user)
-                            return <p key={user.id}>{user.name}</p>
+                            return <div key={user.id} className="block__chatPage__sidebar--userlist--box">
+                                        {activeUserNow.find(x => x === user.name)
+                                         ? <span className="block__chatPage__sidebar--userlist--box--dot--active">< IoIosContact size="40px" color="white"/></span>
+                                         : <span className="block__chatPage__sidebar--userlist--box--dot">< IoIosContact size="40px" color="white"/></span>}
+                                        <p >{user.name}</p>
+                                   </div>
                         })}
                     </div>
                     <div className="block__chatPage__sidebar--roomlist">
@@ -149,13 +161,18 @@ const Chat = ({location}) => {
                             if (data.username === name){
                                 pointKey = "messages-"+ Math.round(Math.random() * 99999999999);
                                 boxClassName = "block__chatPage__mainbar--chatbox--message--sender"
-                            }else {
+                            } else if (data.username === "admin"){
+                                boxClassName = "block__chatPage__mainbar--chatbox--message--admin"
+                            } else {
                                 pointKey = data.id;
                                 boxClassName = "block__chatPage__mainbar--chatbox--message--incoming"
                             }
                             //console.log(data)
                             return <div className={boxClassName} key={pointKey}>
-                                        <div className="block__chatPage__mainbar--chatbox--message--image"></div>
+                                        {activeUserNow.find(x => x === data.username)
+                                         ? <span className="block__chatPage__mainbar--chatbox--message--image--active">< IoIosContact size="35px" color="white"/></span>
+                                         : <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span>}        
+                                        {/* <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span> */}
                                         <div className="block__chatPage__mainbar--chatbox--message--blockText">
                                             <p className="block__chatPage__mainbar--chatbox--message--username">{data.username}</p>
                                             <p className="block__chatPage__mainbar--chatbox--message--text">{data.content}</p>
