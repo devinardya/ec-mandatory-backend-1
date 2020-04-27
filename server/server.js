@@ -125,8 +125,6 @@ io.on('connect', (socket) => {
          io.in(room).emit('updateUser', userList);
          //io.sockets.emit('updateUser', userList);
        
-
-        
     }) 
 
     // when getting new message from client, saved it to file and send it back to 
@@ -138,6 +136,7 @@ io.on('connect', (socket) => {
         //socket.broadcast.to(data.chatRoom).emit('new_message', data)
         //io.sockets.emit('new_message', data);
         //socket.broadcast.emit('new_message', data);
+        console.log("before pushin data")
         chat.push(data);
 
         saveChat();
