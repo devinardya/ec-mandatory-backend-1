@@ -86,7 +86,11 @@ const Chat = ({location}) => {
             let copyMessage = [...messages];		
             updateMessages([...copyMessage, message]);
         })
-    }, [messages]) 
+    }, [messages]);
+    
+    const onAddingRoom = () => {
+        socket.emit('switchRoom')
+    }
 
 
     const onChange = (e) => {
@@ -109,6 +113,8 @@ const Chat = ({location}) => {
         //copyMessage.splice(0, 1);	
         updateMessages([...copyMessage, message]);
     }
+
+    // Logout from chat app
 
     const logout = () => {
         socket.emit('leave', {name, room});
@@ -139,7 +145,7 @@ const Chat = ({location}) => {
                     </div>
                     <div className="block__chatPage__sidebar--roomlist">
                         <h3>Room list</h3>
-                        <button><IoIosAddCircleOutline size="24px"/></button>
+                        <button onClick = {onAddingRoom}><IoIosAddCircleOutline size="24px"/></button>
                         {chatRooms.map(room => {
                             //console.log(room)
                             return <p key={room.id}>{room.room}</p>
