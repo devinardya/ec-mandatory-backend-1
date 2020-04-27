@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
+import {updateUser, updateCurrentRoom, getChatHistory, getIncomingUser, getNewMessages} from '../socket';
 import { IoIosAddCircleOutline, IoMdLogOut} from 'react-icons/io'
 import '../Chat/chat.scss';
 import { Redirect } from 'react-router-dom';
@@ -14,71 +15,70 @@ const Chat = ({location}) => {
     const [chatRooms, updateChatRooms] =  useState([]);
     const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
-    const [incomingUser, updateIncomingUser] = useState("");
     let name = location.state.user;
     const chatWindow = useRef(null);
+    const PORT = 'localhost:3000';
   
    
     // useEffect for joining
     useEffect( () => {
-        socket = io('localhost:3000')
+        socket = io(PORT)
         console.log("1. Joining")
  
         // Emitting to the server, which user and room to join
         socket.emit('join', {name, room});
 
+    }, [PORT, name, room]);
 
-        socket.on('updatechat', data => {
-            console.log(data)
-        }) 
-        socket.on('updateUser', userlist => {
+    useEffect( () => {
+
+        updateUser( socket, (err, userlist) => {
             console.log(userlist)
             updateUsers(userlist);
-        })
-        socket.on('updaterooms', current_room =>{
+        });
+
+        updateCurrentRoom( socket, (err, current_room) => {
             console.log("update room", current_room);
             updateChatRooms(current_room)
-            /* let copyData = [...chatRooms]
-            updateChatRooms([...copyData, current_room])
-            console.log(copyData) */
-        })
-        socket.on('savedMessage', chatHistory =>{
+            });
+
+        getChatHistory( socket, (err, chatHistory) => {
             console.log("savedMessage", chatHistory);
             updateMessages(chatHistory); 
-        })
+        });
+
+    }, [])
+
  
-    }, [name, room, updateUsers, updateChatRooms]);
 
     useEffect(() => {
         console.log("INCOMING USER")
-        socket.on('incomingUser', data => {
-            console.log(data.text);
-            updateIncomingUser(data.text)
-        })
-    }, [updateIncomingUser])
+        getIncomingUser( socket, (err, data) => {
+            console.log(data);
+            let message = data;
+            let copyMessage = [...messages];		
+            updateMessages([...copyMessage, message]);
+        });
+    }, [messages])
 
 
     const scrollToBottom = () => {
-
         const scrollHeight = chatWindow.current.scrollHeight;
         chatWindow.current.scrollTop = scrollHeight;
-
-        //chatWindow.current.scrollIntoView({ behavior: "smooth" })
-      }
+    }
     
     useEffect(scrollToBottom, [messages]);
 
 
     useEffect( () => {
         console.log("getting new mesasage from the server")
-        // socket = io('localhost:3000')
-        socket.on('new_message', function(data){
+        
+        getNewMessages(socket, (err, data) => {
             console.log("new_message", data);
-            //cb(null, data);
             let message = data;
             let copyMessage = [...messages];		
             updateMessages([...copyMessage, message]);
-          });
+        })
     }, [messages]) 
 
 
@@ -90,8 +90,7 @@ const Chat = ({location}) => {
     // sending message
     const onSubmit = (e) => {
         e.preventDefault();
-        // socket = io('localhost:3000')
-        //socket.emit('new_message', input);
+   
         socket.emit("new_message",{
             username: name,
             content: input,
@@ -105,7 +104,6 @@ const Chat = ({location}) => {
     }
 
     const logout = () => {
-        // socket = io('localhost:3000')
         socket.close();
         console.log("DISCONNECTED")
         updateLoginStatus(false);
@@ -165,8 +163,6 @@ const Chat = ({location}) => {
                                     </div> 
                             })
                         } 
-                        {incomingUser}
-                        <div /* ref={chatWindow}  *//>
                     </div>
                     <div className="block__chatPage__mainbar--form">
                         <form onSubmit = {onSubmit}>

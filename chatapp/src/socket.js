@@ -1,11 +1,9 @@
-import io from 'socket.io-client';
+//import io from 'socket.io-client';
 
-const socket = io('localhost:3000');
+/* const socket = io('localhost:3000');
 
-function DataMessagesHistory(){
+function setConnection(){
 
-    
-    
     function connect(){
         return new Promise((resolve, reject) => {
             socket.on('connect', function(){
@@ -13,49 +11,59 @@ function DataMessagesHistory(){
             })
         })
     }
-
-  /*   function join() {
-        console.log("socket join")
-        socket.emit('join', {name, room});
-        socket.on('updatechat', data => {
-            console.log(data)
-        })
-    } */
-
- /*    function updateUser() {
-        console.log("UPDATE USER")
-        return new Promise((resolve, reject) => {
-            socket.on('updateUser', userlist => {
-            console.log(userlist)
-            resolve(userlist)
-            })
-        })
-    } */
-
-    
-
-  
-
     return connect()
-    //.then(join)
-    //.then(updateUser)
-    //.then(updateRoom)
-    /* .then(getDataHistory)
-    .then(getDefaultRoom) */
-
 }
 
+export {setConnection}; */
 
+/* function DataMessagesUpdate(socket, cb){
+    socket.on('new_message', function(message){
+      console.log("new_message", message);
+      cb(null, message);
+    }); */
 
-/* function updateRoomName() {
-    console.log("UPDATE ROOM")
-    return new Promise((resolve, reject) => {
-        socket.on('updaterooms', current_room =>{
-        console.log("update room", current_room);
-        resolve(current_room)
-        })
+function updateUser(socket, cb) {
+    socket.on('updateUser', userlist => {
+    console.log(userlist)
+    cb(null, userlist);
     })
-} */
+}
 
-export {DataMessagesHistory};
+export {updateUser};
+
+function updateCurrentRoom(socket, cb) {
+    socket.on('updaterooms', current_room =>{
+    console.log("update room", current_room);
+    cb(null, current_room)
+    })
+}
+
+export {updateCurrentRoom};
+
+function getChatHistory(socket, cb) {
+    socket.on('savedMessage', chatHistory =>{
+    console.log("savedMessage", chatHistory);
+    cb(null, chatHistory); 
+    })
+}
+
+export {getChatHistory};
+
+function getIncomingUser(socket, cb) {
+    socket.on('incomingUser', data => {
+    console.log(data);
+    cb(null, data)
+    })
+}
+
+export {getIncomingUser};
+
+function getNewMessages(socket, cb) {
+    socket.on('new_message', function(data){
+    console.log("new_message", data);
+    cb(null, data); 
+    });
+}
+
+export {getNewMessages};
 

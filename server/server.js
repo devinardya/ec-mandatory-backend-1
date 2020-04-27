@@ -55,19 +55,25 @@ io.on('connect', (socket) => {
         //const {error, user} = addUser({ id:socket.id, name, room})
         console.log("1. User joining chat. User ", name, " in room ",room)
         socket.join(room, () => {
-            socket.broadcast.emit('incomingUser', {text: name + " has joined"})
+
+            let grettingObj = {
+                username: "admin",
+                content: name + " has joined",
+                chatRoom: room,
+                id: uuid.v4()
+            }
+            socket.to(room).emit('incomingUser', grettingObj);
+            //socket.broadcast.emit('incomingUser', grettingObj)
             //io.sockets.in(room).emit('incomingUser', {text: name + " has joined"});
             console.log("THIS IS JOIN", room)
         })
        
-         //sending notification that a new user has entered the chatroom
-       /*   socket.broadcast.to(room).emit('incomingUser', {text: name + " has joined"})
-         console.log("THIS IS JOIN", socket.rooms) */
-
+      
          // Sending chat history from json saved file
          // not working if one of below code is deleted
          //socket.broadcast.to(room).emit('savedMessage', chat)
-         io.sockets.emit('savedMessage', chat);
+         io.in(room).emit('savedMessage', chat);
+         //io.sockets.emit('savedMessage', chat);
          
          //creating new room object to be sent to the client
          let roomObj = {
@@ -83,7 +89,8 @@ io.on('connect', (socket) => {
  
          //sending notification about the current chat room
          //socket.broadcast.to(room).emit('message', chat)
-         io.sockets.emit('updaterooms', [roomObj]);
+         io.in(room).emit('updaterooms', [roomObj]);
+         //io.sockets.emit('updaterooms', [roomObj]);
 
          // adding the user to the saved file, skipping name that is already in the data
          
@@ -115,7 +122,8 @@ io.on('connect', (socket) => {
 
          // sending user list to the client
          console.log(userList)
-         io.sockets.emit('updateUser', userList);
+         io.in(room).emit('updateUser', userList);
+         //io.sockets.emit('updateUser', userList);
        
 
         
@@ -126,9 +134,10 @@ io.on('connect', (socket) => {
     socket.on('new_message', (data) => {
         data.id = uuid.v4();
         console.log(data)
-        socket.broadcast.to(data.chatRoom).emit('new_message', data)
-        //io.sockets.in(data.chatRoom).emit('new_message', data);
-        socket.broadcast.emit('new_message', data);
+        socket.to(data.chatRoom).emit('new_message', data);
+        //socket.broadcast.to(data.chatRoom).emit('new_message', data)
+        //io.sockets.emit('new_message', data);
+        //socket.broadcast.emit('new_message', data);
         chat.push(data);
 
         saveChat();
