@@ -5,6 +5,10 @@
     box-sizing: border-box;
   }
 
+:focus {
+outline: none;
+}
+
 $color-tertiary-light-button: #8ea8c3ff;
 $color-primary: #d5eeff;
 $color-primary-light: rgb(255, 255, 255);
@@ -132,7 +136,6 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 
         .block__chatPage__sidebar--roomlist {
             width: 100%;
-            border-bottom: 1px dashed #fff ;
             margin-bottom: 20px;
             position: relative;
             margin-left: 20px;
@@ -154,8 +157,20 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                 }
             }
 
-            p {
+            .block__chatPage__sidebar--roomlist--roomsButton {
                 @include p-sidebar-style();
+                position: static;
+                display: block;
+            }
+
+            .block__chatPage__sidebar--roomlist--roomsButton--active {
+                color: $color-text-light;
+                margin-bottom: 10px;
+                font-size: 14px;
+                font-family: $NotoSansJP;
+                margin-left: 20px;
+                position: static;
+                display: block;
             }
         }
 

@@ -76,3 +76,14 @@ function getActiveUsers(socket, cb) {
 
 export {getActiveUsers};
 
+
+function getAllRoomsList(socket, cb) {
+    socket.on('allRoomList', data => {
+        console.log("all rooms list", data);
+        cb(null, data); 
+    })
+}
+
+export {getAllRoomsList};
+
+

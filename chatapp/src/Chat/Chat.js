@@ -1,9 +1,10 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
-import {updateUser, updateCurrentRoom, getChatHistory, getIncomingUser, getNewMessages, getActiveUsers} from '../socket';
+//import queryString from 'query-string'
+import {updateUser, updateCurrentRoom, getChatHistory, getIncomingUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
 import { IoIosAddCircleOutline, IoMdLogOut, IoIosContact} from 'react-icons/io'
 import '../Chat/chat.scss';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 let socket; 
 
@@ -11,25 +12,42 @@ const Chat = ({location}) => {
 
     const [input, updateInput] = useState("");
     const [messages, updateMessages] = useState([]);
-    const [room, updateRoom] = useState('general');
+    const [room, updateRoom] = useState("general");
+    //const [name, updateName] = useState("");
     const [chatRooms, updateChatRooms] =  useState([]);
     const [activeUserNow, updateActiveUsersNow] = useState([])
     const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
+    const [addingRoomStatus, updateAddingRoomStatus] = useState(false);
+    const [addRoomInput, updateAddRoomInput] = useState("")
     let name = location.state.user;
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
   
    
-    // useEffect for joining
+// SENDING JOINED ROOM & USER NAME TO SERVER ===============================================
+
     useEffect( () => {
-        socket = io(PORT)
-        console.log("1. Joining")
+        // Starting a socket for the user
+        socket = io(PORT);
+
+    }, [PORT]);
+
+    useEffect( () => {
+        console.log("1. Joining a channel")
  
+        /* const name = queryString.parse(location.search).name;
+        const room = queryString.parse(location.search).room;
+        console.log("user "+ name + " join room " + room)
+
+        updateName(name);
+        updateRoom(room); */
         // Emitting to the server, which user and room to join
         socket.emit('join', {name, room});
 
-    }, [PORT, name, room]);
+    }, [location.search, name, room]);
+
+// GETTING USER DATA, CHAT HISTORY, CURRENT ROOM DATA FROM SERVER ===============================================
 
     useEffect( () => {
 
@@ -48,7 +66,9 @@ const Chat = ({location}) => {
             updateMessages(chatHistory); 
         });
 
-    }, [])
+    }, [room])
+
+// GETTING ACTIVE USER DATA FROM SERVER ===============================================
 
     useEffect( () => {
         console.log("ACTIVE USER")
@@ -57,6 +77,8 @@ const Chat = ({location}) => {
             updateActiveUsersNow(data)
         })
     }, [])
+
+// GETTING INCOMING USER DATA FROM SERVER ===============================================
 
     useEffect(() => {
         console.log("INCOMING USER")
@@ -68,6 +90,7 @@ const Chat = ({location}) => {
         });
     }, [messages])
 
+// ADDING SCROLL TO BOTTOM ===============================================
 
     const scrollToBottom = () => {
         const scrollHeight = chatWindow.current.scrollHeight;
@@ -76,6 +99,7 @@ const Chat = ({location}) => {
     
     useEffect(scrollToBottom, [messages]);
 
+// GETTING NEW MESSAGES FROM SERVER ===============================================
 
     useEffect( () => {
         console.log("getting new mesasage from the server")
@@ -88,10 +112,40 @@ const Chat = ({location}) => {
         })
     }, [messages]);
     
+// ADDING NEW ROOMS ===============================================
+
     const onAddingRoom = () => {
-        socket.emit('switchRoom')
+        updateAddingRoomStatus(true);
     }
 
+    const addRoomChange = (e) => {
+        let value = e.target.value;
+        updateAddRoomInput(value)
+    }
+
+    const addRoomSubmit = (e) => {
+        e.preventDefault();
+        console.log(addRoomInput)
+        let newRoom = addRoomInput
+        socket.emit('addingRoom', {name, newRoom})
+        updateAddRoomInput("");
+    };
+
+    useEffect( () => {
+        getAllRoomsList(socket, (err, data) => {
+            console.log("all chat rooms", data)
+            updateChatRooms(data)
+        })
+    }, [])
+
+    const switchRoom = (newRoom) => {
+        if(newRoom !== room){
+            socket.emit('leave', {name, room});
+            updateRoom(newRoom)
+        }
+    };
+
+// ADDING & SENDING NEW MESSAGES TO SERVER ===============================================
 
     const onChange = (e) => {
         let value = e.target.value;
@@ -114,7 +168,7 @@ const Chat = ({location}) => {
         updateMessages([...copyMessage, message]);
     }
 
-    // Logout from chat app
+// LOG OUT FROM CHAT APP ===============================================
 
     const logout = () => {
         socket.emit('leave', {name, room});
@@ -146,9 +200,26 @@ const Chat = ({location}) => {
                     <div className="block__chatPage__sidebar--roomlist">
                         <h3>Room list</h3>
                         <button onClick = {onAddingRoom}><IoIosAddCircleOutline size="24px"/></button>
-                        {chatRooms.map(room => {
+                        <form onSubmit={addRoomSubmit}>
+                            <input type="text" value={addRoomInput} onChange={addRoomChange} />
+                        </form>
+                        {chatRooms.map(rooms => {
+                            let roomLink;
+                            let activeRoom;
                             //console.log(room)
-                            return <p key={room.id}>{room.room}</p>
+                            if(rooms.user === name) {
+                                activeRoom = "block__chatPage__sidebar--roomlist--roomsButton--active"
+                                roomLink = <button className= {activeRoom}
+                                              key={rooms.id} /* to={`/chat?name=${name}&room=${room.room}`} */
+                                              onClick={ () => switchRoom(rooms.room)}
+                                            >
+                                              {rooms.room}
+                                            </button>
+                            } else {
+                                activeRoom = "block__chatPage__sidebar--roomlist--roomsButton"
+                            }
+
+                            return roomLink;
                         })
                         }
                     </div>
@@ -168,6 +239,7 @@ const Chat = ({location}) => {
                                 pointKey = "messages-"+ Math.round(Math.random() * 99999999999);
                                 boxClassName = "block__chatPage__mainbar--chatbox--message--sender"
                             } else if (data.username === "admin"){
+                                pointKey = "admin"+ Math.round(Math.random() * 99999999999);
                                 boxClassName = "block__chatPage__mainbar--chatbox--message--admin"
                             } else {
                                 pointKey = data.id;
