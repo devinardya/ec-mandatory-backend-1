@@ -5,23 +5,7 @@ const fs = require('fs');
 
 const {userCreateUser, userAddRoom} = require('./users');
 const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms} = require('./rooms');
-
-const chatHistory = 'chat.json';
-const chat = JSON.parse(fs.readFileSync(chatHistory));
-
-
-
-function saveChat() {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(chatHistory, JSON.stringify(chat), function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    });
-};
+const {newMessage} = require('./messages');
 
 
 // ===============
@@ -45,6 +29,7 @@ http.listen(port, () => {
 let activeUser = [];
 let userData = [];
 let roomsData = [];
+let chat = [];
 
 
 
@@ -67,13 +52,7 @@ io.on('connect', (socket) => {
         userData = userCreateUser({name});
         roomsData = roomsInitiateRooms();
         console.log('my current roomsdata', roomsData)
-        // roomsData = [...theRooms]
-       /*  const {error, roomsList} = roomsCreateRoom({room});
-        console.log(error)
-        if(!error) {
-            roomsData = [...roomsList]
-        } */
-
+      
         //===========================================
         //===========================================
 
@@ -167,13 +146,9 @@ io.on('connect', (socket) => {
     // when getting new message from client, saved it to file and send it back to 
     // the client to be added on the current chat
     socket.on('new_message', (data) => {
-        data.id = uuid.v4();
-        console.log(data)
-        socket.to(data.chatRoom).emit('new_message', data);
         
-        chat.push(data);
-
-        saveChat();
+        chat = newMessage({data})
+        socket.to(data.chatRoom).emit('new_message', chat);
     });
 
     socket.on('leave', ({name, room}) => {
