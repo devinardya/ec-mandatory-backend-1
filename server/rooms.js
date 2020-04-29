@@ -16,35 +16,75 @@ function saveRoom() {
     });
 };
 
-// Create a new user
+//To convert all room string value to Title Case
+function titleCase(str) {
+    return str.toLowerCase().split(' ').map(function(word) {
+      return (word.charAt(0).toUpperCase() + word.slice(1));
+    }).join(' ');
+}
+
+// Create a new room
 function roomsCreateRoom({room}){
     let roomExists = false;
+    let copyRoom = room.toLowerCase();
+
+
 
     roomsList.map(eachRoom => {
-        if (eachRoom.usersroom === room){
+        let copyFromArray = eachRoom.usersroom.toLowerCase();
+        if (copyFromArray === copyRoom){
             // remember room already exist
             roomExists = true;
-
         } 
     })
 
     if (roomExists === true) {
-        // user already exists. do no do anything
+        // The room already exists. no nothing
         console.log('The room ', room, ' already exists. No new room added.')
+        
     } else {
         roomData = { username : [],  
-                     usersroom : room,
+                     usersroom : titleCase(room),
+                     id : uuid.v4(),
+                     activeUsers : []
+                    }
+        roomsList.push(roomData);
+        saveRoom();
+        console.log("A new room: ", room, " was added.");
+        console.log(roomsList)
+        
+    }
+    return roomsList;
+}
+
+// Create the general room
+function roomsInitiateRooms(){
+    let roomExists = false;
+    let copyFromArray;
+    let room = 'general';
+    roomsList.map(eachRoom => {
+        copyFromArray = eachRoom.usersroom.toLowerCase();
+        if (copyFromArray === room){
+            // remember room already exist
+            roomExists = true;
+        } 
+    })
+
+    if (roomExists === true) {
+        // General room already exists. Do nothing
+        return roomsList;
+    } else {
+        roomData = { username : [],  
+                     usersroom : titleCase(room),
                      id : uuid.v4(),
                      activeUsers : []
                     }
         roomsList.push(roomData);
         saveRoom();
         console.log("A new room: ", room, " was added.")
+        return roomsList;
     }
-
-    return roomsList;
 }
-
 
 // Add rooms for a user
 function roomsAddUsers({name, room, userData}){
@@ -54,7 +94,12 @@ function roomsAddUsers({name, room, userData}){
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom === room)
+    console.log('roomslist ', roomsList)
+    console.log('room ', room)
+    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase());
+    console.log('my user data', userData)
+    console.log('current Room', currentRoom)
+    console.log('current Room users', currentRoom.username);
     // Find rooms current users
     currentUsers = currentRoom.username;
     // Does the user already exist in this room? 
@@ -96,9 +141,10 @@ function roomsAddActive({name, room, userData}){
     console.log("CURRENTUSERS", currentUsers);
     userExists = currentUsers.some( x => x.username === name)
     console.log("USEREXIST", userExists)
-    if (userExists === false){
+    if (!userExists){
         // -1 === no matches 
         // add the user for the room
+        console.log(userData)
         let thisuser = userData.findIndex(x => x.username === name);
 
         userData = { username : userData[thisuser].username,  
@@ -107,17 +153,19 @@ function roomsAddActive({name, room, userData}){
         currentUsers.push(userData);
         saveRoom();
         console.log("A new active user: ", name, " was added to room ", room)
+       
     } else {
         // there is a room at the index roomExists
         // do nothing
         console.log("No new active users was added to the room ", room)
+       
+       
     }
-
     return currentUsers;
 }
 
 
-// Add active user to a room
+// Remove active user from a room
 function roomsRemoveActive({name, room}){
 
     let currentRoom;
@@ -149,4 +197,4 @@ function roomsRemoveActive({name, room}){
 
 
 
-module.exports = {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive};
+module.exports = {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms};
