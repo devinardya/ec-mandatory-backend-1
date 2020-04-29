@@ -12,7 +12,7 @@ const Chat = ({location}) => {
 
     const [input, updateInput] = useState("");
     const [messages, updateMessages] = useState([]);
-    const [room, updateRoom] = useState("general");
+    const [currentRoom, updateRoom] = useState("general");
     //const [name, updateName] = useState("");
     const [chatRooms, updateChatRooms] =  useState([]);
     const [activeUserNow, updateActiveUsersNow] = useState([])
@@ -35,7 +35,7 @@ const Chat = ({location}) => {
 
     useEffect( () => {
         console.log("1. Joining a channel")
- 
+        let room = currentRoom;
         /* const name = queryString.parse(location.search).name;
         const room = queryString.parse(location.search).room;
         console.log("user "+ name + " join room " + room)
@@ -45,7 +45,7 @@ const Chat = ({location}) => {
         // Emitting to the server, which user and room to join
         socket.emit('join', {name, room});
 
-    }, [location.search, name, room]);
+    }, [location.search, name, currentRoom]);
 
 // GETTING USER DATA, CHAT HISTORY, CURRENT ROOM DATA FROM SERVER ===============================================
 
@@ -66,7 +66,7 @@ const Chat = ({location}) => {
             updateMessages(chatHistory); 
         });
 
-    }, [room])
+    }, [currentRoom])
 
 // GETTING ACTIVE USER DATA FROM SERVER ===============================================
 
@@ -124,10 +124,11 @@ const Chat = ({location}) => {
     }
 
     const addRoomSubmit = (e) => {
+        
         e.preventDefault();
         console.log(addRoomInput)
-        let newRoom = addRoomInput
-        socket.emit('addingRoom', {name, newRoom})
+        let room= addRoomInput
+        socket.emit('addingRoom', {name, room})
         updateAddRoomInput("");
     };
 
@@ -139,8 +140,10 @@ const Chat = ({location}) => {
     }, [])
 
     const switchRoom = (newRoom) => {
+        let room = currentRoom;
+        let currentActiveUser = [...activeUserNow];
         if(newRoom !== room){
-            socket.emit('leave', {name, room});
+            socket.emit('leave', {name, room, currentActiveUser});
             updateRoom(newRoom)
         }
     };
@@ -159,7 +162,7 @@ const Chat = ({location}) => {
         socket.emit("new_message",{
             username: name,
             content: input,
-            chatRoom: room
+            chatRoom: currentRoom
         })
         updateInput("");
         let message = {username: name, content: input};
@@ -171,6 +174,7 @@ const Chat = ({location}) => {
 // LOG OUT FROM CHAT APP ===============================================
 
     const logout = () => {
+        let room = currentRoom;
         socket.emit('leave', {name, room});
         socket.close();
         console.log("DISCONNECTED")
@@ -188,14 +192,26 @@ const Chat = ({location}) => {
                         <h2>Welcome, {name}</h2>
                     </div>
                     <div className="block__chatPage__sidebar--userlist">
+                        <ul>
                         {users.map(user => {
-                            return <div key={user.id} className="block__chatPage__sidebar--userlist--box">
-                                        {activeUserNow.find(x => x === user.name)
-                                         ? <span className="block__chatPage__sidebar--userlist--box--dot--active">< IoIosContact size="40px" color="white"/></span>
-                                         : <span className="block__chatPage__sidebar--userlist--box--dot">< IoIosContact size="40px" color="white"/></span>}
-                                        <p >{user.name}</p>
-                                   </div>
+                            console.log(user)
+                            let printUserList;
+                            if(user.usersroom === currentRoom){
+                                console.log("ACTIVE USER IN CURRENT ROOM",activeUserNow, currentRoom)
+                                printUserList = user.username.map(eachUser => {
+                                                    console.log("eachUser", eachUser)
+                                                    return (<li key={eachUser.id} className="block__chatPage__sidebar--userlist--box">
+                                                                {activeUserNow.find(x => x === eachUser.username)
+                                                                ? <span className="block__chatPage__sidebar--userlist--box--dot--active">< IoIosContact size="40px" color="white"/></span>
+                                                                : <span className="block__chatPage__sidebar--userlist--box--dot">< IoIosContact size="40px" color="white"/></span>}
+                                                                <p>{eachUser.username}</p>
+                                                            </li>)
+                                                })
+                            }
+
+                            return printUserList;
                         })}
+                        </ul>
                     </div>
                     <div className="block__chatPage__sidebar--roomlist">
                         <h3>Room list</h3>
@@ -203,25 +219,35 @@ const Chat = ({location}) => {
                         <form onSubmit={addRoomSubmit}>
                             <input type="text" value={addRoomInput} onChange={addRoomChange} />
                         </form>
-                        {chatRooms.map(rooms => {
-                            let roomLink;
-                            let activeRoom;
-                            //console.log(room)
-                            if(rooms.user === name) {
-                                activeRoom = "block__chatPage__sidebar--roomlist--roomsButton--active"
-                                roomLink = <button className= {activeRoom}
-                                              key={rooms.id} /* to={`/chat?name=${name}&room=${room.room}`} */
-                                              onClick={ () => switchRoom(rooms.room)}
-                                            >
-                                              {rooms.room}
-                                            </button>
-                            } else {
-                                activeRoom = "block__chatPage__sidebar--roomlist--roomsButton"
-                            }
+                        <ul>
+                            {chatRooms.map(rooms => {
+                                console.log(rooms)
+                                let printList;
+                                if (rooms.username === name){
 
-                            return roomLink;
-                        })
-                        }
+                                printList = rooms.usersroom.map( eachRoom => {
+                                    console.log("the rooms in usersroom", eachRoom.usersroom, currentRoom)
+                                    let activeRoom;
+                                    if(eachRoom.usersroom === currentRoom){
+                                        activeRoom = "block__chatPage__sidebar--roomlist--roomsButton--active";
+                                    } else if (eachRoom.usersroom !== currentRoom){
+                                        activeRoom = "block__chatPage__sidebar--roomlist--roomsButton";
+                                    }
+
+                                    return <li key={eachRoom.id} className= {activeRoom}>
+                                                <button 
+                                                    /* to={`/chat?name=${name}&room=${room.room}`} */
+                                                    onClick={ () => switchRoom(eachRoom.usersroom)}
+                                                    >
+                                                    {eachRoom.usersroom}
+                                                </button>
+                                            </li>;
+                                    })
+                                }
+                                return printList;
+                            })
+                            }
+                        </ul>
                     </div>
                     <div className="block__chatPage__sidebar--logoutButton">
                         <button onClick={logout}>

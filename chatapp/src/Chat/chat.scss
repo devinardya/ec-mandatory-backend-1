@@ -83,8 +83,8 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
             font-size: 16px;
         }
 
-        @mixin p-sidebar-style {
-            color: $color-text-dark;
+        @mixin p-sidebar-style($text-color) {
+            color: $text-color;
             margin-bottom: 10px;
             font-size: 14px;
             font-family: $NotoSansJP;
@@ -122,7 +122,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                 }
 
                 p {
-                    @include p-sidebar-style();
+                    @include p-sidebar-style($color-text-dark);
                     margin-left: 60px;
                 }   
             }
@@ -157,21 +157,29 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                 }
             }
 
-            .block__chatPage__sidebar--roomlist--roomsButton {
-                @include p-sidebar-style();
-                position: static;
-                display: block;
-            }
+            ul {
+                list-style-type: none;
 
-            .block__chatPage__sidebar--roomlist--roomsButton--active {
-                color: $color-text-light;
-                margin-bottom: 10px;
-                font-size: 14px;
-                font-family: $NotoSansJP;
-                margin-left: 20px;
-                position: static;
-                display: block;
+                .block__chatPage__sidebar--roomlist--roomsButton {
+         
+                    button {
+                        @include p-sidebar-style($color-text-dark);
+                        position: static;
+                        display: block;
+                    }
+                }
+    
+                .block__chatPage__sidebar--roomlist--roomsButton--active {
+        
+                    button {
+                        @include p-sidebar-style($color-text-light);
+                        position: static;
+                        display: block;
+                    }
+                }
+
             }
+ 
         }
 
         .block__chatPage__sidebar--logoutButton {

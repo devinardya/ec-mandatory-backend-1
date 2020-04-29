@@ -3,12 +3,16 @@ const app = express();
 const uuid = require('uuid'); 
 const fs = require('fs');
 
+
+const {addUserData, userCreateUser, userAddRoom} = require('./users');
+const {addRoomsData, roomsCreateRoom, roomsAddUsers} = require('./rooms');
+
 const chatHistory = 'chat.json';
-const allUser = 'user.json';
-const allRooms = 'room.json';
+//const allUser = 'user.json';
+//const allRooms = 'room.json';
 const chat = JSON.parse(fs.readFileSync(chatHistory));
-const userList = JSON.parse(fs.readFileSync(allUser));
-const roomsList = JSON.parse(fs.readFileSync(allRooms));
+//const userList = JSON.parse(fs.readFileSync(allUser));
+//const roomsList = JSON.parse(fs.readFileSync(allRooms));
 
 function saveChat() {
     return new Promise((resolve, reject) => {
@@ -23,7 +27,7 @@ function saveChat() {
 
 };
 
-function saveUser() {
+/* function saveUser() {
     return new Promise((resolve, reject) => {
         fs.writeFile(allUser, JSON.stringify(userList), function (err) {
             if (err) {
@@ -34,9 +38,9 @@ function saveUser() {
         });
     });
 
-};
+}; */
 
-function saveRoom() {
+/* function saveRoom() {
     return new Promise((resolve, reject) => {
         fs.writeFile(allRooms, JSON.stringify(roomsList), function (err) {
             if (err) {
@@ -47,7 +51,7 @@ function saveRoom() {
         });
     });
 
-};
+}; */
 
 
 const http = require('http').createServer(app);
@@ -60,6 +64,8 @@ app.get('/', (req, res) => {
 });
 
 let activeUser = [];
+let userData = [];
+let roomsData = [];
 
 
 io.on('connect', (socket) => {
@@ -81,57 +87,37 @@ io.on('connect', (socket) => {
                 id: uuid.v4()
             }
 
-//===========================================
-            //===========================================
+        socket.to(room).emit('incomingUser', grettingObj);
 
-            let roomObj = {
-                user: name,
-                room: room,
-                id : uuid.v4()
-            }
+        //===========================================
+        //===========================================
 
-            console.log("Room list", roomsList)
-            let checkRoomTemp;
-            let checkRoom;
-            checkRoom = false;
-            roomIsTrue = false;
+        // old way
+        // userData = addUserData({name, room});  
+        // roomsData = addRoomsData({name, room})
+        // console.log(roomsData)
 
-            console.log('5. Checking rooms')
-            roomsList.map(eachRooms => { 
-                console.log("name", name, eachRooms.user)
-                if(eachRooms.user === name){
-                    console.log("checking same room", eachRooms.room, room)
-                    checkRoomTemp = eachRooms.room.includes(room);
-                    console.log(checkRoomTemp)
-                    if (checkRoomTemp === true){
-                        console.log("checking same room TRUE")
-                        checkRoom = true;
-                        // roomIsTrue = true;
-                    }
-                } else {
-                    
-                    // checkRoom = false;
-                }
-             });
+        //====================
+        // new way
+        // do it in 2 steps
+        // 1. create room and user (or check if user and room already exists)
+        userData = userCreateUser({name});
+        roomsData = roomsCreateRoom({room});
 
-                //console.log("name status", checkName)
-                if(roomsList.length === 0){
-                    //console.log("adding user")
-                    roomsList.push(roomObj);
-                    saveRoom();
-                }  else if (checkRoom === false) {
-                    //console.log("adding user 2")
-                    roomsList.push(roomObj);
-                    saveRoom();
-                }
-          
+        // 2. add room for the user and add users for the room
+        userData = userAddRoom({name, room, roomsData});
+        roomsData = roomsAddUsers({name, room, userData});
 
-//===========================================
-            //===========================================
+        console.log("currentUserData", userData);
+        console.log("currentRoomsData", roomsData)
+
+        //===========================================
+        //===========================================
 
             let checkNameTemp;
             let checkName;
              checkName = false;
+             console.log("ACTIVE USER WHEN JUST JOIN ROOM", activeUser)
              activeUser.map(user => { 
              //console.log(user)
              //console.log('current name',name)
@@ -154,34 +140,35 @@ io.on('connect', (socket) => {
             }
 
             
-            socket.emit('updaterooms', roomsList);
+            socket.emit('updaterooms', userData);
             
             console.log("active users now", activeUser);
             io.in(room).emit('activeUsers', activeUser);
-           
-            socket.to(room).emit('incomingUser', grettingObj);
+            console.log(roomsData)
+            io.in(room).emit('updateUser', roomsData);
+            
 
             console.log("THIS IS JOIN", room)
         })
 
        
-//===========================================
-            //===========================================
+        //===========================================
+        //===========================================
       
-         // Sending chat history from json saved file
+        // Sending chat history from json saved file
   
          let filteredChat = chat.filter( x => x.chatRoom === room)
          io.in(room).emit('savedMessage', filteredChat);
         
          
-         //creating new user object to be sent to the client
-         let userObj = {
+        //creating new user object to be sent to the client
+        /* let userObj = {
              name: name,
              id : uuid.v4()
-         }
- 
+        }
+  */
          
-        //console.log(userList)
+        /* //console.log(userList)
         let checkNameTemp;
         let checkName;
         checkName = false;
@@ -208,47 +195,24 @@ io.on('connect', (socket) => {
          }
 
          // sending user list to the client
-         console.log(userList)
-         io.in(room).emit('updateUser', userList);
+         console.log(userList) */
+         
 
     }); 
 
-    socket.on('addingRoom', ({name, newRoom}) => {
-        console.log("The new room just added ", newRoom)
+    socket.on('addingRoom', ({name, room}) => {
 
-        let roomObj = {
-            user: name,
-            room: newRoom,
-            id : uuid.v4()
-        }
+        console.log(room)
+        userData = userCreateUser({name});
+        roomsData = roomsCreateRoom({room});
 
-        let checkRoomTemp;
-        let checkRoom;
-        checkRoom = false;
-        roomsList.map(eachRooms  => { 
+        // 2. add room for the user and add users for the room
+        userData = userAddRoom({name, room, roomsData});
+        roomsData = roomsAddUsers({name, room, userData});
 
-            if(eachRooms.user === name) {
-                checkRoomTemp = eachRooms.room.includes(newRoom);
-                if (checkRoomTemp === true){
-                    checkRoom = true;
-                }
-            } 
-            
-      
-         });
-
-         //console.log("name status", checkName)
-         if(roomsList.length === 0){
-             //console.log("adding user")
-             roomsList.push(roomObj);
-             saveRoom();
-         }  else if (checkRoom === false) {
-             //console.log("adding user 2")
-             roomsList.push(roomObj);
-             saveRoom();
-         }
-
-         socket.emit('allRoomList', roomsList);
+        console.log("USERDATA", userData);
+        console.log("ROOMSDATA", roomsData);
+        socket.emit('allRoomList', userData);
     });
 
     // when getting new message from client, saved it to file and send it back to 
@@ -263,14 +227,16 @@ io.on('connect', (socket) => {
         saveChat();
     })
 
-    socket.on('leave', ({name, room}) => {
+    socket.on('leave', ({name, room, currentActiveUser}) => {
+        console.log("SWITCHING ROOMS!!!!!")
 
         socket.leave(room, () => {
             console.log("user " + name + " is leaving room " + room)
-            const index = activeUser.indexOf(name);
+            const index = currentActiveUser.indexOf(name);
             if (index > -1) {
-            activeUser.splice(index, 1);
-            socket.to(room).emit('activeUsers', activeUser);
+            currentActiveUser.splice(index, 1);
+            activeUser=[];
+            socket.to(room).emit('activeUsers', currentActiveUser);
             //io.in(room).emit('activeUsers', activeUser);
             }
     
