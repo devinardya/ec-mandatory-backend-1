@@ -201,7 +201,7 @@ const Chat = ({location}) => {
                                 printUserList = user.username.map(eachUser => {
                                                     console.log("eachUser", eachUser)
                                                     return (<li key={eachUser.id} className="block__chatPage__sidebar--userlist--box">
-                                                                {activeUserNow.find(x => x === eachUser.username)
+                                                                {activeUserNow.some(x => x.username === eachUser.username)
                                                                 ? <span className="block__chatPage__sidebar--userlist--box--dot--active">< IoIosContact size="40px" color="white"/></span>
                                                                 : <span className="block__chatPage__sidebar--userlist--box--dot">< IoIosContact size="40px" color="white"/></span>}
                                                                 <p>{eachUser.username}</p>

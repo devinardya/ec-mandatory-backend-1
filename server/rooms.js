@@ -34,7 +34,8 @@ function roomsCreateRoom({room}){
     } else {
         roomData = { username : [],  
                      usersroom : room,
-                     id : uuid.v4()
+                     id : uuid.v4(),
+                     activeUsers : []
                     }
         roomsList.push(roomData);
         saveRoom();
@@ -79,6 +80,73 @@ function roomsAddUsers({name, room, userData}){
     return roomsList;
 }
 
+// Add active user to a room
+function roomsAddActive({name, room, userData}){
+
+    let currentRoom;
+    let currentUsers;
+    let userExists;
+
+    // Find the current room
+    currentRoom = roomsList.find(x => x.usersroom === room)
+    // Find rooms current users
+    console.log("CURRENTROOM", currentRoom);
+    currentUsers = currentRoom.activeUsers;
+    // Does the user already exist in this room? 
+    console.log("CURRENTUSERS", currentUsers);
+    userExists = currentUsers.some( x => x.username === name)
+    console.log("USEREXIST", userExists)
+    if (userExists === false){
+        // -1 === no matches 
+        // add the user for the room
+        let thisuser = userData.findIndex(x => x.username === name);
+
+        userData = { username : userData[thisuser].username,  
+                    id : userData[thisuser].id
+           }
+        currentUsers.push(userData);
+        saveRoom();
+        console.log("A new active user: ", name, " was added to room ", room)
+    } else {
+        // there is a room at the index roomExists
+        // do nothing
+        console.log("No new active users was added to the room ", room)
+    }
+
+    return currentUsers;
+}
 
 
-module.exports = {roomsCreateRoom, roomsAddUsers};
+// Add active user to a room
+function roomsRemoveActive({name, room}){
+
+    let currentRoom;
+    let currentUsers;
+    let userExists;
+
+    // Find the current room
+    currentRoom = roomsList.find(x => x.usersroom === room)
+    // Find rooms current users
+    currentUsers = currentRoom.activeUsers;
+    // Does the user already exist in this room? 
+    userExists = currentUsers.findIndex(x => x.activeUsers === name);
+
+    if (userExists === -1){
+        // -1 === no matches 
+        currentUsers.splice(userExists,1);
+        console.log("Active user ", name, "was removed from room ", room)
+        // do nothing
+
+    } else {
+        // there is a user to remove
+        //currentUsers.splice(userExists,1);
+
+        
+    }
+
+    return currentUsers;
+}
+
+
+
+module.exports = {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive};

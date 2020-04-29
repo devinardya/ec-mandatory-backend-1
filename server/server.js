@@ -4,15 +4,12 @@ const uuid = require('uuid');
 const fs = require('fs');
 
 
-const {addUserData, userCreateUser, userAddRoom} = require('./users');
-const {addRoomsData, roomsCreateRoom, roomsAddUsers} = require('./rooms');
+const {userCreateUser, userAddRoom} = require('./users');
+const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive} = require('./rooms');
 
 const chatHistory = 'chat.json';
-//const allUser = 'user.json';
-//const allRooms = 'room.json';
 const chat = JSON.parse(fs.readFileSync(chatHistory));
-//const userList = JSON.parse(fs.readFileSync(allUser));
-//const roomsList = JSON.parse(fs.readFileSync(allRooms));
+
 
 function saveChat() {
     return new Promise((resolve, reject) => {
@@ -26,32 +23,6 @@ function saveChat() {
     });
 
 };
-
-/* function saveUser() {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(allUser, JSON.stringify(userList), function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    });
-
-}; */
-
-/* function saveRoom() {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(allRooms, JSON.stringify(roomsList), function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    });
-
-}; */
 
 
 const http = require('http').createServer(app);
@@ -87,59 +58,32 @@ io.on('connect', (socket) => {
                 id: uuid.v4()
             }
 
-        socket.to(room).emit('incomingUser', grettingObj);
+            socket.to(room).emit('incomingUser', grettingObj);
 
-        //===========================================
-        //===========================================
+            //===========================================
+            //===========================================
 
-        // old way
-        // userData = addUserData({name, room});  
-        // roomsData = addRoomsData({name, room})
-        // console.log(roomsData)
+        
+            // new way
+            // do it in 2 steps
+            // 1. create room and user (or check if user and room already exists)
+            userData = userCreateUser({name});
+            roomsData = roomsCreateRoom({room});
 
-        //====================
-        // new way
-        // do it in 2 steps
-        // 1. create room and user (or check if user and room already exists)
-        userData = userCreateUser({name});
-        roomsData = roomsCreateRoom({room});
+            // 2. add room for the user and add users for the room
+            userData = userAddRoom({name, room, roomsData});
+            roomsData = roomsAddUsers({name, room, userData});
 
-        // 2. add room for the user and add users for the room
-        userData = userAddRoom({name, room, roomsData});
-        roomsData = roomsAddUsers({name, room, userData});
+            console.log("currentUserData", userData);
+            console.log("currentRoomsData", roomsData)
 
-        console.log("currentUserData", userData);
-        console.log("currentRoomsData", roomsData)
+            //===========================================
+            //===========================================
 
-        //===========================================
-        //===========================================
-
-            let checkNameTemp;
-            let checkName;
-             checkName = false;
-             console.log("ACTIVE USER WHEN JUST JOIN ROOM", activeUser)
-             activeUser.map(user => { 
-             //console.log(user)
-             //console.log('current name',name)
-             checkNameTemp = user.includes(name);
-             if (checkNameTemp === true){
-                 checkName = true;
-             }
-             // console.log("checkName", checkName)
-             
-            });
-
-            if(activeUser.length === 0){
-                //console.log("adding user")
-                activeUser.push(name)
+            // 3. add active user to the room
+            activeUser = roomsAddActive({name, room, userData});
+            console.log(activeUser)
                 
-            }  else if (checkName === false) {
-                //console.log("adding user 2")
-                activeUser.push(name);
-                
-            }
-
-            
             socket.emit('updaterooms', userData);
             
             console.log("active users now", activeUser);
@@ -159,51 +103,12 @@ io.on('connect', (socket) => {
   
          let filteredChat = chat.filter( x => x.chatRoom === room)
          io.in(room).emit('savedMessage', filteredChat);
-        
-         
-        //creating new user object to be sent to the client
-        /* let userObj = {
-             name: name,
-             id : uuid.v4()
-        }
-  */
-         
-        /* //console.log(userList)
-        let checkNameTemp;
-        let checkName;
-        checkName = false;
-         userList.map(user => { 
-             //console.log(user)
-             //console.log('current name',name)
-             checkNameTemp = user.name.includes(name);
-             if (checkNameTemp === true){
-                 checkName = true;
-             }
-             // console.log("checkName", checkName)
-             
-         });
-
-         //console.log("name status", checkName)
-         if(userList.length === 0){
-             //console.log("adding user")
-             userList.push(userObj);
-             saveUser();
-         }  else if (checkName === false) {
-             //console.log("adding user 2")
-             userList.push(userObj);
-             saveUser();
-         }
-
-         // sending user list to the client
-         console.log(userList) */
-         
 
     }); 
 
     socket.on('addingRoom', ({name, room}) => {
 
         console.log(room)
-        userData = userCreateUser({name});
         roomsData = roomsCreateRoom({room});
 
         // 2. add room for the user and add users for the room
@@ -227,36 +132,30 @@ io.on('connect', (socket) => {
         saveChat();
     })
 
-    socket.on('leave', ({name, room, currentActiveUser}) => {
-        console.log("SWITCHING ROOMS!!!!!")
+    socket.on('leave', ({name, room}) => {
+        console.log("LEAVING ROOMS!!!!!")
 
         socket.leave(room, () => {
-            console.log("user " + name + " is leaving room " + room)
+            /* console.log("user " + name + " is leaving room " + room)
             const index = currentActiveUser.indexOf(name);
             if (index > -1) {
             currentActiveUser.splice(index, 1);
-            activeUser=[];
             socket.to(room).emit('activeUsers', currentActiveUser);
             //io.in(room).emit('activeUsers', activeUser);
-            }
+            } */
+            
     
         });
+        activeUser =  roomsRemoveActive({name, room})
+        console.log("ACTIVE USERS AFTER LEAVING", activeUser)
+        socket.to(room).emit('activeUsers', activeUser);
     })
-
- 
-
-   /*  socket.on('switchRoom', ({oldRoom, newRoom}) =>{
-        if(oldRoom)
-            socket.leave(oldRoom);
-    
-        socket.join(newRoom);
-    });
- */
    
 
     socket.on('disconnect', () => {
         io.emit('user disconnected');
         console.log("user has disconnected")
+        
       });
 });
 
