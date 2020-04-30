@@ -1,8 +1,9 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
 import AddRoomModal from '../Chat/AddRoomModal';
-import {updateUser, updateCurrentRoom, getChatHistory, getIncomingUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
-import { IoIosAddCircleOutline, IoMdLogOut, IoIosContact} from 'react-icons/io'
+import {updateUser, updateCurrentRoom, getChatHistory, getStatusUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
+import { IoIosAddCircleOutline, IoMdLogOut, IoIosContact, IoIosChatbubbles} from 'react-icons/io';
+import {TiDelete} from 'react-icons/ti';
 import '../Chat/chat.scss';
 import { Redirect} from 'react-router-dom';
 
@@ -20,6 +21,7 @@ const Chat = ({location}) => {
     const [loginStatus, updateLoginStatus] = useState(true);
     const [addingRoomStatus, updateAddingRoomStatus] = useState(false);
     let name = location.state.user;
+    let defaultRoom = location.state.defaultRoom;
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
   
@@ -29,18 +31,28 @@ const Chat = ({location}) => {
     useEffect( () => {
         // Starting a socket for the user
         socket = io(PORT);
-
+        console.log("0.setting socket");
     }, [PORT]);
+
+    const getDefaultRoom = () => {
+
+        console.log(defaultRoom);
+        updateRoom(defaultRoom);
+    }
+
+    useEffect(
+        getDefaultRoom, []
+    );
 
     useEffect( () => {
         console.log("1. Joining a channel")
-        //console.log(currentRoom)
         let room = currentRoom;
-        //console.log(room)
-  
-        // Emitting to the server, which user and room to join
-        socket.emit('join', {name, room});
+        console.log(room)
 
+        if(currentRoom) {
+            // Emitting to the server, which user and room to join
+            socket.emit('join', {name, room});
+        }
     }, [name, currentRoom]);
 
 // GETTING USER DATA, CHAT HISTORY, CURRENT ROOM DATA FROM SERVER ===============================================
@@ -77,8 +89,9 @@ const Chat = ({location}) => {
 // GETTING INCOMING USER DATA FROM SERVER ===============================================
 
     useEffect(() => {
-        console.log("INCOMING USER")
-        getIncomingUser( socket, (err, data) => {
+        console.log("STATUS USER")
+        console.log(messages)
+        getStatusUser( socket, (err, data) => {
             console.log(data);
             let message = data;
             let copyMessage = [...messages];		
@@ -102,9 +115,7 @@ const Chat = ({location}) => {
         
         getNewMessages(socket, (err, data) => {
             console.log("new_message", data);
-            let message = data;
-            let copyMessage = [...messages];		
-            updateMessages([...copyMessage, message]);
+            updateMessages(data);
         })
     }, [messages]);
     
@@ -115,23 +126,6 @@ const Chat = ({location}) => {
         updateAddingRoomStatus(true);
         console.log(addingRoomStatus)
     }
-
-   /*  const addRoomChange = (value) => {
-        //let value = e.target.value;
-        updateAddRoomInput(value)
-    } */
-
-   /*  const addRoomSubmit = (addRoomInput) => {
-        
-        //console.log(addRoomInput)
-        let room= addRoomInput
-        socket.emit('addingRoom', {name, room}, (error) => {
-            if(error) {
-                console.log(error);
-            }
-        updateAddRoomInput("");
-        });
-    }; */
 
     useEffect( () => {
         console.log("GETTING ALL CHAT ROOM")
@@ -150,6 +144,12 @@ const Chat = ({location}) => {
         }
     };
 
+// REMOVING ROOMS ===============================================
+
+    const removeRoom = (index) => {
+
+    }
+ 
 // ADDING & SENDING NEW MESSAGES TO SERVER ===============================================
 
     const onChange = (e) => {
@@ -196,12 +196,12 @@ const Chat = ({location}) => {
                     <div className="block__chatPage__sidebar--userlist">
                         <ul>
                         {users.map(user => {
-                            console.log(user)
+                            //console.log(user)
                             let printUserList;
                             if(user.usersroom === currentRoom){
-                                console.log("ACTIVE USER IN CURRENT ROOM",activeUserNow, currentRoom)
+                                //console.log("ACTIVE USER IN CURRENT ROOM",activeUserNow, currentRoom)
                                 printUserList = user.username.map(eachUser => {
-                                                    console.log("eachUser", eachUser)
+                                                    //console.log("eachUser", eachUser)
                                                     return (<li key={eachUser.id} className="block__chatPage__sidebar--userlist--box">
                                                                 {activeUserNow.some(x => x.username === eachUser.username)
                                                                 ? <span className="block__chatPage__sidebar--userlist--box--dot--active">< IoIosContact size="40px" color="white"/></span>
@@ -216,21 +216,23 @@ const Chat = ({location}) => {
                         </ul>
                     </div>
                     <div className="block__chatPage__sidebar--roomlist">
-                        <h3>Room list</h3>
-                        <button onClick = {onAddingRoom}><IoIosAddCircleOutline size="24px"/></button>
-                        { addingRoomStatus && <AddRoomModal name = {name} 
-                                                            socket = {socket}
-                                                            updateAddingRoomStatus = {updateAddingRoomStatus}
-                                               />}
+                        <div className="block__chatPage__sidebar--roomlist--title">
+                            <h3>Room list</h3>
+                            <button onClick = {onAddingRoom}><IoIosAddCircleOutline size="24px"/></button>
+                            { addingRoomStatus && <AddRoomModal name = {name} 
+                                                                socket = {socket}
+                                                                updateAddingRoomStatus = {updateAddingRoomStatus}
+                                                />}
+                        </div>
                         
                         <ul>
                             {chatRooms.map(rooms => {
-                                console.log(rooms)
+                                //console.log(rooms)
                                 let printList;
                                 if (rooms.username === name){
 
                                 printList = rooms.usersroom.map( eachRoom => {
-                                    console.log("the rooms in usersroom", eachRoom.usersroom, currentRoom)
+                                    //console.log("the rooms in usersroom", eachRoom.usersroom, currentRoom)
                                     let activeRoom;
                                     if(eachRoom.usersroom === currentRoom){
                                         activeRoom = "block__chatPage__sidebar--roomlist--roomsButton--active";
@@ -238,13 +240,16 @@ const Chat = ({location}) => {
                                         activeRoom = "block__chatPage__sidebar--roomlist--roomsButton";
                                     }
 
-                                    return <li key={eachRoom.id} className= {activeRoom}>
-                                                <button 
-                                                    /* to={`/chat?name=${name}&room=${room.room}`} */
-                                                    onClick={ () => switchRoom(eachRoom.usersroom)}
-                                                    >
-                                                    {eachRoom.usersroom}
+                                    return <li key={eachRoom.id} className= "block__chatPage__sidebar--roomlist--room">
+                                                <button onClick={ () => switchRoom(eachRoom.usersroom)}>
+                                                    <span className= {activeRoom}>
+                                                        <IoIosChatbubbles size="22px"/>
+                                                    </span>
+                                                    <span className = "block__chatPage__sidebar--roomlist--roomsText">
+                                                        {eachRoom.usersroom}
+                                                    </span>
                                                 </button>
+                                                {eachRoom.usersroom === "General" ? null : <span onClick ={() => removeRoom(eachRoom.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
                                             </li>;
                                     })
                                 }
@@ -263,13 +268,14 @@ const Chat = ({location}) => {
                 <div className="block__chatPage__mainbar">
                     <div className="block__chatPage__mainbar--chatbox" ref={chatWindow}  >
                         {messages.map(data => {
+                            console.log(data)
                             let pointKey;
                             let boxClassName;
                             if (data.username === name){
                                 pointKey = "messages-"+ Math.round(Math.random() * 99999999999);
                                 boxClassName = "block__chatPage__mainbar--chatbox--message--sender"
                             } else if (data.username === "Admin"){
-                                pointKey = "admin"+ Math.round(Math.random() * 99999999999);
+                                pointKey = data.id;
                                 boxClassName = "block__chatPage__mainbar--chatbox--message--admin"
                             } else {
                                 pointKey = data.id;

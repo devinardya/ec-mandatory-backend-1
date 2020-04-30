@@ -27,14 +27,14 @@ function getChatHistory(socket, cb) {
 
 export {getChatHistory};
 
-function getIncomingUser(socket, cb) {
-    socket.on('incomingUser', data => {
+function getStatusUser(socket, cb) {
+    socket.on('statusUser', data => {
     console.log(data);
     cb(null, data)
     })
 }
 
-export {getIncomingUser};
+export {getStatusUser};
 
 function getNewMessages(socket, cb) {
     socket.on('new_message', function(data){

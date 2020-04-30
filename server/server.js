@@ -32,7 +32,6 @@ let roomsData = [];
 let chat = [];
 
 
-
 io.on('connect', (socket) => {
     console.log('0. User connected to server');
     
@@ -45,6 +44,15 @@ io.on('connect', (socket) => {
         //const {error, user} = addUser({ id:socket.id, name, room})
         console.log("1. User joining chat. User ", name, " in room ",room)
 
+        let data = {
+            username: "Admin",
+            content: name + " has joined " + room,
+            chatRoom: room,
+            id : uuid.v4()
+        }
+        chat = newMessage({data})
+        socket.to(room).emit('statusUser', chat);
+        
         //===========================================
         //===========================================
 
@@ -90,14 +98,7 @@ io.on('connect', (socket) => {
         console.log(roomsData)
         io.in(room).emit('updateUser', roomsData);
 
-        let grettingObj = {
-            username: "Admin",
-            content: name + " has joined " + room,
-            chatRoom: room,
-            id: uuid.v4()
-        }
-
-        socket.to(room).emit('incomingUser', grettingObj);
+        
 
         //===========================================
         //===========================================
@@ -152,9 +153,21 @@ io.on('connect', (socket) => {
     });
 
     socket.on('leave', ({name, room}) => {
-        console.log("LEAVING ROOMS!!!!!")
+        console.log("LEAVING ROOMS!!!!!");
+
+        let data = {
+            username: "Admin",
+            content: name + " has left room ",
+            chatRoom: room,
+            id : uuid.v4()
+        }
+
+        chat = newMessage({data})
+        //greeting.push(data)
+        socket.to(room).emit('statusUser', chat);
 
         socket.leave(room);
+        
         activeUser =  roomsRemoveActive({name, room})
         console.log("ACTIVE USERS AFTER LEAVING", activeUser)
         socket.to(room).emit('activeUsers', activeUser);
