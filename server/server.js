@@ -65,6 +65,7 @@ io.on('connect', (socket) => {
         //===========================================
 
         // 2. add room for the user and add users for the room
+        console.log('2. Adding user and room')
         userData = userAddRoom({name, room, roomsData});
         roomsData = roomsAddUsers({name, room, userData});
 
@@ -75,7 +76,9 @@ io.on('connect', (socket) => {
         //===========================================
 
         // 3. add active user to the room
+        console.log('3. Adding active user to room ', room)
         activeUser = roomsAddActive({name, room, userData});
+        console.log('my current roomsdata', roomsData)
  
         //===========================================
         //===========================================

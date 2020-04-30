@@ -21,7 +21,6 @@ const Chat = ({location}) => {
     const [loginStatus, updateLoginStatus] = useState(true);
     const [addingRoomStatus, updateAddingRoomStatus] = useState(false);
     let name = location.state.user;
-    //let defaultRoom = location.state.defaultRoom;
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
   
@@ -34,25 +33,15 @@ const Chat = ({location}) => {
         console.log("0.setting socket");
     }, [PORT]);
 
-    /* const getDefaultRoom = () => {
-
-        console.log(defaultRoom);
-        updateRoom(defaultRoom);
-    }
-
-    useEffect(
-        getDefaultRoom, []
-    ); */
+ 
 
     useEffect( () => {
         console.log("1. Joining a channel")
         let room = currentRoom;
         console.log(room)
 
-        if(currentRoom) {
-            // Emitting to the server, which user and room to join
-            socket.emit('join', {name, room});
-        }
+        socket.emit('join', {name, room});
+        
     }, [name, currentRoom]);
 
 // GETTING USER DATA, CHAT HISTORY, CURRENT ROOM DATA FROM SERVER ===============================================
@@ -220,7 +209,7 @@ const Chat = ({location}) => {
                     <div className="block__chatPage__sidebar--userlist">
                         <ul>
                         {users.map(user => {
-                            //console.log("USER", user)
+                            console.log("USER", user)
                             let printUserList;
                             if(user.usersroom === currentRoom){
                                 //console.log("ACTIVE USER IN CURRENT ROOM",activeUserNow, currentRoom)
@@ -251,7 +240,7 @@ const Chat = ({location}) => {
                         
                         <ul>
                             {chatRooms.map(rooms => {
-                                console.log("CHATROOM", rooms)
+                                //console.log("CHATROOM", rooms)
                                 let printList;
                                 if (rooms.username === name){
 

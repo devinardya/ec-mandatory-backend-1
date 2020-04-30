@@ -146,6 +146,7 @@ function roomsAddActive({name, room, userData}){
            }
         currentUsers.push(userData);
         saveRoom();
+        console.log(roomsList)
         console.log("A new active user: ", name, " was added to room ", room)
        
     } else {
@@ -209,6 +210,7 @@ function roomRemoveUser({room, userId, roomsData}) {
          
      });
      console.log("DATA BEFORE RETURN", copyRoomData)
+
     return copyRoomData;
 }
 

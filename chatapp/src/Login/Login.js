@@ -26,7 +26,7 @@ const Login = () => {
      if(status) {
          return <Redirect to={{
                  pathname: "/chat",
-                 state: { user: name, defaultRoom: 'General' }
+                 state: { user: name}
               }}
                  /> 
     } 
