@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import '../Login/login.scss';
 import { AiFillWechat } from "react-icons/ai";
 import { IoMdLogIn } from 'react-icons/io';
@@ -26,15 +26,9 @@ const Login = () => {
      if(status) {
          return <Redirect to={{
                  pathname: "/chat",
-                state: { user: name }
-               /*  pathname: `/chat?name=${name}&room=general`, */
+                 state: { user: name }
               }}
                  /> 
-       /*  linkButton = <>
-                        <Link onClick={e => !username ? e.preventDefault() : null} to={`/chat?name=${username}&room=general`}>
-                             <button className="block__loginPage--login-button"><IoMdLogIn className="block__loginPage--login-button--icons" size="40px"/></button>
-                        </Link>
-                     </> */
     } 
 
 
