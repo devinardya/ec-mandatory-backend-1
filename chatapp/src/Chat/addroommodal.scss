@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP|Poppins:400,700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :focus {
+    outline: none;
+}
+    
+    $color-tertiary-light-button: #8ea8c3ff;
+    $color-primary: #d5eeff;
+    $color-primary-light: rgb(255, 255, 255);
+    $color-text-light: #ffa84e;
+    $color-secondary-light: #a7dbf3;
+    $color-secondary-light-sender: #fde1a3;
+    $color-text-dark: #525252;
+    $color-text-light-grey: #adadad;
+    $color-text-dark2: rgb(12, 49, 129);
+    $color-text-online: rgb(173, 230, 227);
+
+    $Poppins : 'Poppins', sans-serif;
+    $NotoSansJP : 'Noto Sans JP', sans-serif;
+
+@mixin flex-column($justify, $align) {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+@mixin flex-row($justify, $align) {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+@mixin button-style($bg-color, $text-color) {
+    margin-top: 20px;
+    width: 150px;
+    height: 40px;
+    border: none;
+    background-color: $bg-color;
+    font-size: 14px;
+    color: $text-color;
+    border-radius: 20px;
+}
+
+
+.block__chatPage__sidebar--roomlist--modal {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(225,225,225, 0.75);
+    position: absolute;
+    top:0;
+    z-index: 99999;
+}
+
+.block__chatPage__sidebar--roomlist--modal--formcontainer {
+    width: 500px;
+    height: 37%;
+    background-color: $color-primary-light;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 20px;
+    -webkit-box-shadow: 0px 0px 21px 0px rgb(190, 190, 190);
+    -moz-box-shadow: 0px 0px 21px 0px rgb(190, 190, 190);
+    box-shadow: 0px 0px 21px 0px rgb(190, 190, 190);   
+
+    h2{
+        font-family: $Poppins;
+        color: $color-text-light;
+        margin-bottom: 20px;
+    }
+
+    form {
+        @include flex-column(center, center);
+        width: 100%;
+    }
+
+    input {
+        margin-bottom: 10px;
+        width: 70%;
+        height: 40px;
+        font-size: 16px;
+        padding-left: 20px;
+        border: 1px dashed $color-text-light-grey;
+    }
+
+    p {
+        color: red;
+        height: 30px;
+    }
+
+    .block__chatPage__sidebar--roomlist--modal--buttons {
+        @include flex-row(center, center );
+
+        span {
+            @include button-style($color-text-light-grey, $color-primary-light);
+            margin-right: 20px;
+            padding: 10px;
+
+    
+            &:hover {
+                background-color: $color-tertiary-light-button;
+                cursor: pointer;
+            }
+        }
+        
+        button {
+            @include button-style($color-text-light, #3d3d3d);
+    
+            &:hover {
+                background-color: rgb(255, 136, 0);
+                cursor: pointer;
+            }
+        }
+    }
+
+    
+}

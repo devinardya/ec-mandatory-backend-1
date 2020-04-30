@@ -16,12 +16,6 @@ function saveRoom() {
     });
 };
 
-//To convert all room string value to Title Case
-function titleCase(str) {
-    return str.toLowerCase().split(' ').map(function(word) {
-      return (word.charAt(0).toUpperCase() + word.slice(1));
-    }).join(' ');
-}
 
 // Create a new room
 function roomsCreateRoom({room}){
@@ -61,7 +55,7 @@ function roomsCreateRoom({room}){
 function roomsInitiateRooms(){
     let roomExists = false;
     let copyFromArray;
-    let room = 'general';
+    let room = 'General';
     roomsList.map(eachRoom => {
         copyFromArray = eachRoom.usersroom.toLowerCase();
         if (copyFromArray === room){
@@ -133,7 +127,7 @@ function roomsAddActive({name, room, userData}){
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom === room)
+    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     console.log("CURRENTROOM", currentRoom);
     currentUsers = currentRoom.activeUsers;
@@ -173,7 +167,7 @@ function roomsRemoveActive({name, room}){
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom === room)
+    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     currentUsers = currentRoom.activeUsers;
     // Does the user already exist in this room? 

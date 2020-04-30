@@ -1,26 +1,4 @@
-//import io from 'socket.io-client';
 
-/* const socket = io('localhost:3000');
-
-function setConnection(){
-
-    function connect(){
-        return new Promise((resolve, reject) => {
-            socket.on('connect', function(){
-                resolve(console.log("CONNECTED")) 
-            })
-        })
-    }
-    return connect()
-}
-
-export {setConnection}; */
-
-/* function DataMessagesUpdate(socket, cb){
-    socket.on('new_message', function(message){
-      console.log("new_message", message);
-      cb(null, message);
-    }); */
 
 function updateUser(socket, cb) {
     socket.on('updateUser', userlist => {

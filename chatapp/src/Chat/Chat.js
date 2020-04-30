@@ -1,9 +1,11 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
+import AddRoomModal from '../Chat/AddRoomModal';
 import {updateUser, updateCurrentRoom, getChatHistory, getIncomingUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
 import { IoIosAddCircleOutline, IoMdLogOut, IoIosContact} from 'react-icons/io'
 import '../Chat/chat.scss';
 import { Redirect} from 'react-router-dom';
+
 
 let socket; 
 
@@ -17,7 +19,6 @@ const Chat = ({location}) => {
     const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
     const [addingRoomStatus, updateAddingRoomStatus] = useState(false);
-    const [addRoomInput, updateAddRoomInput] = useState("")
     let name = location.state.user;
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
@@ -33,9 +34,9 @@ const Chat = ({location}) => {
 
     useEffect( () => {
         console.log("1. Joining a channel")
-        console.log(currentRoom)
+        //console.log(currentRoom)
         let room = currentRoom;
-        console.log(room)
+        //console.log(room)
   
         // Emitting to the server, which user and room to join
         socket.emit('join', {name, room});
@@ -110,18 +111,19 @@ const Chat = ({location}) => {
 // ADDING NEW ROOMS ===============================================
 
     const onAddingRoom = () => {
-        updateAddingRoomStatus(true);
-    }
-
-    const addRoomChange = (e) => {
-        let value = e.target.value;
-        updateAddRoomInput(value)
-    }
-
-    const addRoomSubmit = (e) => {
         
-        e.preventDefault();
-        console.log(addRoomInput)
+        updateAddingRoomStatus(true);
+        console.log(addingRoomStatus)
+    }
+
+   /*  const addRoomChange = (value) => {
+        //let value = e.target.value;
+        updateAddRoomInput(value)
+    } */
+
+   /*  const addRoomSubmit = (addRoomInput) => {
+        
+        //console.log(addRoomInput)
         let room= addRoomInput
         socket.emit('addingRoom', {name, room}, (error) => {
             if(error) {
@@ -129,9 +131,10 @@ const Chat = ({location}) => {
             }
         updateAddRoomInput("");
         });
-    };
+    }; */
 
     useEffect( () => {
+        console.log("GETTING ALL CHAT ROOM")
         getAllRoomsList(socket, (err, data) => {
             console.log("all chat rooms", data)
             updateChatRooms(data)
@@ -215,9 +218,11 @@ const Chat = ({location}) => {
                     <div className="block__chatPage__sidebar--roomlist">
                         <h3>Room list</h3>
                         <button onClick = {onAddingRoom}><IoIosAddCircleOutline size="24px"/></button>
-                        <form onSubmit={addRoomSubmit}>
-                            <input type="text" value={addRoomInput} onChange={addRoomChange} />
-                        </form>
+                        { addingRoomStatus && <AddRoomModal name = {name} 
+                                                            socket = {socket}
+                                                            updateAddingRoomStatus = {updateAddingRoomStatus}
+                                               />}
+                        
                         <ul>
                             {chatRooms.map(rooms => {
                                 console.log(rooms)
