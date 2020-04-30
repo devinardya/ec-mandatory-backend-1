@@ -44,7 +44,7 @@ function roomsCreateRoom({room}){
         
     } else {
         roomData = { username : [],  
-                     usersroom : titleCase(room),
+                     usersroom : room,
                      id : uuid.v4(),
                      activeUsers : []
                     }
@@ -75,7 +75,7 @@ function roomsInitiateRooms(){
         return roomsList;
     } else {
         roomData = { username : [],  
-                     usersroom : titleCase(room),
+                     usersroom : room,
                      id : uuid.v4(),
                      activeUsers : []
                     }
