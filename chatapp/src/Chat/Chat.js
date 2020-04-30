@@ -146,16 +146,17 @@ const Chat = ({location}) => {
 
 // REMOVING ROOMS ===============================================
 
-    const removeRoom = (index) => {
+    const removeRoom = (roomId, userId) => {
         console.log("REMOVE ROOM")
         let copyData = [...chatRooms];
-        
+        let room = currentRoom;
+        console.log("USERID", userId)
         
         let removeData = copyData.map( eachChatRoom => {
             
            if(eachChatRoom.username === name) {
                console.log("username match")
-                const listIndex = eachChatRoom.usersroom.findIndex (x => x.id === index);
+                const listIndex = eachChatRoom.usersroom.findIndex (x => x.id === roomId);
                 console.log(listIndex)
                 let copyDataChatRoom = [...eachChatRoom.usersroom]
                 copyDataChatRoom.splice(listIndex, 1)
@@ -169,7 +170,7 @@ const Chat = ({location}) => {
         });
         console.log(removeData)
         updateChatRooms(removeData) 
-        socket.emit('remove_room', ({name, index}))
+        socket.emit('remove_room', ({name, room, roomId, userId}))
 
     }
  
@@ -219,7 +220,7 @@ const Chat = ({location}) => {
                     <div className="block__chatPage__sidebar--userlist">
                         <ul>
                         {users.map(user => {
-                            //console.log(user)
+                            //console.log("USER", user)
                             let printUserList;
                             if(user.usersroom === currentRoom){
                                 //console.log("ACTIVE USER IN CURRENT ROOM",activeUserNow, currentRoom)
@@ -250,7 +251,7 @@ const Chat = ({location}) => {
                         
                         <ul>
                             {chatRooms.map(rooms => {
-                                //console.log(rooms)
+                                console.log("CHATROOM", rooms)
                                 let printList;
                                 if (rooms.username === name){
 
@@ -272,7 +273,7 @@ const Chat = ({location}) => {
                                                         {eachRoom.usersroom}
                                                     </span>
                                                 </button>
-                                                {eachRoom.usersroom === "General" ? null : <span onClick ={() => removeRoom(eachRoom.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
+                                                {eachRoom.usersroom === "General" ? null : <span onClick ={() => removeRoom(eachRoom.id, rooms.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
                                             </li>;
                                     })
                                 }

@@ -189,8 +189,29 @@ function roomsRemoveActive({name, room}){
     return currentUsers;
 }
 
+function roomRemoveUser({room, userId, roomsData}) {
+
+    let copyRoomData = [...roomsData];
+
+    copyRoomData.map( eachChatRoom => {
+            console.log("EACH CHAT ROOM", eachChatRoom)
+        if(eachChatRoom.usersroom === room) {
+            console.log("room match")
+            
+             const listIndex = eachChatRoom.username.findIndex (x => x.id === userId);
+             console.log(listIndex)
+             let copyDataChatRoom = [...eachChatRoom.username]
+             copyDataChatRoom.splice(listIndex, 1)
+             console.log("result", copyDataChatRoom)
+             eachChatRoom.username = copyDataChatRoom;
+  
+         }
+         
+     });
+     console.log("DATA BEFORE RETURN", copyRoomData)
+    return copyRoomData;
+}
 
 
 
-
-module.exports = {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms};
+module.exports = {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, roomRemoveUser};

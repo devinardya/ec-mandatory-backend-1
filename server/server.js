@@ -4,7 +4,7 @@ const uuid = require('uuid');
 const fs = require('fs');
 
 const {userCreateUser, userAddRoom, userRemoveRoom} = require('./users');
-const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, removeRoomFromUser} = require('./rooms');
+const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, roomRemoveUser} = require('./rooms');
 const {newMessage} = require('./messages');
 
 
@@ -152,10 +152,17 @@ io.on('connect', (socket) => {
         socket.to(data.chatRoom).emit('new_message', chat);
     });
 
-    socket.on('remove_room', ({name, index}) => {
+    socket.on('remove_room', ({name, room, roomId, userId}) => {
         console.log("REMOVE ROOM")
-        userData = userRemoveRoom({name, index, userData})
-        console.log("after remove room data", userData);
+        userData = userRemoveRoom({name, roomId, userData});
+        console.log("after remove room data from USERDATA", userData);
+
+        roomsData = roomRemoveUser({room, userId, roomsData});
+        console.log("after remove room data from ROOMDATA", roomsData);
+
+        socket.emit('allRoomList', userData);
+        io.in(room).emit('updateUser', roomsData);
+
     })
 
     socket.on('leave', ({name, room}) => {
