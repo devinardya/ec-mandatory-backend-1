@@ -152,6 +152,7 @@ io.on('connect', (socket) => {
     socket.on('new_message', (data) => {
         
         chat = newMessage({data})
+        console.log("DATA CHATROOM", data.chatRoom)
         socket.to(data.chatRoom).emit('new_message', chat);
     });
 
@@ -161,7 +162,7 @@ io.on('connect', (socket) => {
         console.log("after remove room data from USERDATA", userData);
 
         roomsData = roomRemoveUser({room, userId, roomsData});
-        console.log("after remove room data from ROOMDATA", roomsData);
+        console.log("after remove user data from ROOMDATA", roomsData);
 
         socket.emit('allRoomList', userData);
         io.in(room).emit('updateUser', roomsData);

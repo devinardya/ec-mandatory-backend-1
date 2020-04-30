@@ -58,7 +58,7 @@ function roomsInitiateRooms(){
     let room = 'General';
     roomsList.map(eachRoom => {
         copyFromArray = eachRoom.usersroom.toLowerCase();
-        if (copyFromArray === room){
+        if (copyFromArray === room.toLowerCase()){
             // remember room already exist
             roomExists = true;
         } 

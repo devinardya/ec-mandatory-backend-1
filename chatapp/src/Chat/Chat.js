@@ -30,6 +30,7 @@ const Chat = ({location}) => {
     useEffect( () => {
         // Starting a socket for the user
         socket = io(PORT);
+      
         console.log("0.setting socket");
     }, [PORT]);
 
@@ -209,7 +210,7 @@ const Chat = ({location}) => {
                     <div className="block__chatPage__sidebar--userlist">
                         <ul>
                         {users.map(user => {
-                            console.log("USER", user)
+                            //console.log("USER", user)
                             let printUserList;
                             if(user.usersroom === currentRoom){
                                 //console.log("ACTIVE USER IN CURRENT ROOM",activeUserNow, currentRoom)

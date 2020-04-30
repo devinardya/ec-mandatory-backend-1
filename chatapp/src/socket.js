@@ -1,3 +1,21 @@
+/* import io from 'socket.io-client';
+
+
+
+function setConnection(){
+    const socket = io('localhost:3000');
+
+    function connect(){
+        return new Promise((resolve, reject) => {
+            socket.on('connect', function(){
+                resolve(console.log("CONNECTED")) 
+            })
+        })
+    }
+    return connect()
+}
+
+export {setConnection};  */
 
 
 function updateUser(socket, cb) {
