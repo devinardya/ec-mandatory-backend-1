@@ -3,8 +3,8 @@ const app = express();
 const uuid = require('uuid'); 
 const fs = require('fs');
 
-const {userCreateUser, userAddRoom} = require('./users');
-const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms} = require('./rooms');
+const {userCreateUser, userAddRoom, userRemoveRoom} = require('./users');
+const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, removeRoomFromUser} = require('./rooms');
 const {newMessage} = require('./messages');
 
 
@@ -50,8 +50,8 @@ io.on('connect', (socket) => {
             chatRoom: room,
             id : uuid.v4()
         }
-        chat = newMessage({data})
-        socket.to(room).emit('statusUser', chat);
+        //chat = newMessage({data})
+        //socket.to(room).emit('statusUser', chat);
         
         //===========================================
         //===========================================
@@ -152,6 +152,12 @@ io.on('connect', (socket) => {
         socket.to(data.chatRoom).emit('new_message', chat);
     });
 
+    socket.on('remove_room', ({name, index}) => {
+        console.log("REMOVE ROOM")
+        userData = userRemoveRoom({name, index, userData})
+        console.log("after remove room data", userData);
+    })
+
     socket.on('leave', ({name, room}) => {
         console.log("LEAVING ROOMS!!!!!");
 
@@ -162,9 +168,9 @@ io.on('connect', (socket) => {
             id : uuid.v4()
         }
 
-        chat = newMessage({data})
+        //chat = newMessage({data})
         //greeting.push(data)
-        socket.to(room).emit('statusUser', chat);
+        //socket.to(room).emit('statusUser', chat);
 
         socket.leave(room);
         

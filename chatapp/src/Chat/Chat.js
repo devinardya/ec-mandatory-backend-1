@@ -21,7 +21,7 @@ const Chat = ({location}) => {
     const [loginStatus, updateLoginStatus] = useState(true);
     const [addingRoomStatus, updateAddingRoomStatus] = useState(false);
     let name = location.state.user;
-    let defaultRoom = location.state.defaultRoom;
+    //let defaultRoom = location.state.defaultRoom;
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
   
@@ -34,7 +34,7 @@ const Chat = ({location}) => {
         console.log("0.setting socket");
     }, [PORT]);
 
-    const getDefaultRoom = () => {
+    /* const getDefaultRoom = () => {
 
         console.log(defaultRoom);
         updateRoom(defaultRoom);
@@ -42,7 +42,7 @@ const Chat = ({location}) => {
 
     useEffect(
         getDefaultRoom, []
-    );
+    ); */
 
     useEffect( () => {
         console.log("1. Joining a channel")
@@ -90,9 +90,9 @@ const Chat = ({location}) => {
 
     useEffect(() => {
         console.log("STATUS USER")
-        console.log(messages)
+        //console.log(messages)
         getStatusUser( socket, (err, data) => {
-            console.log(data);
+            //console.log(data);
             let message = data;
             let copyMessage = [...messages];		
             updateMessages([...copyMessage, message]);
@@ -147,6 +147,29 @@ const Chat = ({location}) => {
 // REMOVING ROOMS ===============================================
 
     const removeRoom = (index) => {
+        console.log("REMOVE ROOM")
+        let copyData = [...chatRooms];
+        
+        
+        let removeData = copyData.map( eachChatRoom => {
+            
+           if(eachChatRoom.username === name) {
+               console.log("username match")
+                const listIndex = eachChatRoom.usersroom.findIndex (x => x.id === index);
+                console.log(listIndex)
+                let copyDataChatRoom = [...eachChatRoom.usersroom]
+                copyDataChatRoom.splice(listIndex, 1)
+                console.log("result", copyDataChatRoom)
+                eachChatRoom.usersroom = copyDataChatRoom;
+
+                
+            }
+
+            return eachChatRoom;
+        });
+        console.log(removeData)
+        updateChatRooms(removeData) 
+        socket.emit('remove_room', ({name, index}))
 
     }
  
@@ -268,7 +291,7 @@ const Chat = ({location}) => {
                 <div className="block__chatPage__mainbar">
                     <div className="block__chatPage__mainbar--chatbox" ref={chatWindow}  >
                         {messages.map(data => {
-                            console.log(data)
+                            //console.log(data)
                             let pointKey;
                             let boxClassName;
                             if (data.username === name){

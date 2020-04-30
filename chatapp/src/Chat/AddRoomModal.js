@@ -27,6 +27,7 @@ const AddRoomModal = ({name, socket, updateAddingRoomStatus}) => {
             }
         updateInputValue("");
         updateModalStatus(false)
+        updateAddingRoomStatus(false)
         });
     }
 
