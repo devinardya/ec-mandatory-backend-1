@@ -17,12 +17,19 @@ function saveChat() {
 };
 
 function newMessage({data}){
-    data.id = uuid.v4();
-    console.log("CHAT DATA", data)
 
-    chat.push(data);
-    saveChat();
+    if(data.username === "Admin") {
+        data.id = uuid.v4();
+        console.log("CHAT DATA", data)
 
+        chat.push(data);
+    } else {
+        data.id = uuid.v4();
+        console.log("CHAT DATA", data)
+
+        chat.push(data);
+        saveChat();
+    }
     return chat
 }
 
