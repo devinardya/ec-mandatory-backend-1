@@ -171,22 +171,23 @@ function roomsRemoveActive({name, room}){
     currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     currentUsers = currentRoom.activeUsers;
+    console.log("CURRENT USER", currentUsers)
     // Does the user already exist in this room? 
-    userExists = currentUsers.findIndex(x => x.activeUsers === name);
-
+    userExists = currentUsers.findIndex(x => x.username === name);
+    console.log("USEREXIST", userExists)
     if (userExists === -1){
         // -1 === no matches 
-        currentUsers.splice(userExists,1);
-        console.log("Active user ", name, "was removed from room ", room)
+        
+      
         // do nothing
 
     } else {
+        currentUsers.splice(userExists,1);
+        console.log("Active user ", name, "was removed from room ", room)
         // there is a user to remove
         //currentUsers.splice(userExists,1);
-
-        
     }
-
+    console.log("CURRENTUSERS", currentUsers)
     return currentUsers;
 }
 

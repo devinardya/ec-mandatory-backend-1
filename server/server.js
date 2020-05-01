@@ -32,6 +32,7 @@ let roomsData = [];
 let chat = [];
 
 
+
 io.on('connect', (socket) => {
     console.log('0. User connected to server');
     
@@ -59,7 +60,7 @@ io.on('connect', (socket) => {
         // 1. create room and user (or check if user and room already exists)
         userData = userCreateUser({name});
         roomsData = roomsInitiateRooms();
-        console.log('my current roomsdata', roomsData)
+        //console.log('my current roomsdata', roomsData)
       
         //===========================================
         //===========================================
@@ -69,8 +70,8 @@ io.on('connect', (socket) => {
         userData = userAddRoom({name, room, roomsData});
         roomsData = roomsAddUsers({name, room, userData});
 
-        console.log("currentUserData", userData);
-        console.log("currentRoomsData", roomsData)
+        //console.log("currentUserData", userData);
+        //console.log("currentRoomsData", roomsData)
 
         //===========================================
         //===========================================
@@ -109,14 +110,15 @@ io.on('connect', (socket) => {
         // 6. Sending chat history from json saved file
   
          let filteredChat = chat.filter( x => x.chatRoom === room)
+         //console.log("FILTEREDCHAT", filteredChat)
          io.in(room).emit('savedMessage', filteredChat);
     }); 
 
     socket.on('addingRoom', ({name, room}, cb) => {
 
-       console.log("ROOM DATA BEFORE ADDING", roomsData)
+       //console.log("ROOM DATA BEFORE ADDING", roomsData)
        let checkRoomList = roomsData.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
-       console.log("check room list", checkRoomList)
+       //console.log("check room list", checkRoomList)
        if (checkRoomList) {
             console.log("room exist")
             cb([{error: "ERROR: room is already exists!"}]);
@@ -135,13 +137,13 @@ io.on('connect', (socket) => {
             
             
         // 2. add room for the user and add users for the room
-        console.log("my new roomdata after adding a room ", roomsData)
+        //console.log("my new roomdata after adding a room ", roomsData)
         userData = userAddRoom({name, room, roomsData});
-        console.log("my new userdata after adding a room ", userData)
+        //console.log("my new userdata after adding a room ", userData)
         roomsData = roomsAddUsers({name, room, userData});
 
-        console.log("USERDATA", userData);
-        console.log("ROOMSDATA", roomsData);
+        //console.log("USERDATA", userData);
+        //console.log("ROOMSDATA", roomsData);
         socket.emit('allRoomList', userData);
 
         cb();
@@ -152,9 +154,12 @@ io.on('connect', (socket) => {
     socket.on('new_message', (data) => {
         
         chat = newMessage({data})
-        console.log("DATA CHATROOM", data.chatRoom)
-        socket.to(data.chatRoom).emit('new_message', chat);
+        let filteredChat = chat.filter( x => x.chatRoom === data.chatRoom)
+        socket.to(data.chatRoom).emit('new_message', filteredChat);
     });
+
+
+    // REMOVE ROOM
 
     socket.on('remove_room', ({name, room, roomId, userId}) => {
         console.log("REMOVE ROOM")
@@ -164,13 +169,17 @@ io.on('connect', (socket) => {
         roomsData = roomRemoveUser({room, userId, roomsData});
         console.log("after remove user data from ROOMDATA", roomsData);
 
+        activeUser =  roomsRemoveActive({name, room})
+        console.log("ACTIVE USERS AFTER LEAVING", activeUser)
+        socket.to(room).emit('activeUsers', activeUser);
+
         socket.emit('allRoomList', userData);
         io.in(room).emit('updateUser', roomsData);
 
     })
 
     socket.on('leave', ({name, room}) => {
-        console.log("LEAVING ROOMS!!!!!");
+        console.log(name, "LEAVING ROOMS!!!!!");
 
         let data = {
             username: "Admin",

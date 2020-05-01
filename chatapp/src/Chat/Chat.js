@@ -105,6 +105,10 @@ const Chat = ({location}) => {
         
         getNewMessages(socket, (err, data) => {
             console.log("new_message", data);
+      /*       let message = data;
+            let copyMessage = [...messages];	
+        //copyMessage.splice(0, 1);	
+        updateMessages([...copyMessage, message]); */
             updateMessages(data);
         })
     }, [messages]);
@@ -136,11 +140,13 @@ const Chat = ({location}) => {
 
 // REMOVING ROOMS ===============================================
 
-    const removeRoom = (roomId, userId) => {
+    const removeRoom = (roomId, room, userId) => {
+
         console.log("REMOVE ROOM")
         let copyData = [...chatRooms];
-        let room = currentRoom;
         console.log("USERID", userId)
+
+        socket.emit('remove_room', ({name, room, roomId, userId}))
         
         let removeData = copyData.map( eachChatRoom => {
             
@@ -152,16 +158,13 @@ const Chat = ({location}) => {
                 copyDataChatRoom.splice(listIndex, 1)
                 console.log("result", copyDataChatRoom)
                 eachChatRoom.usersroom = copyDataChatRoom;
-
-                
             }
 
             return eachChatRoom;
         });
         console.log(removeData)
         updateChatRooms(removeData) 
-        socket.emit('remove_room', ({name, room, roomId, userId}))
-
+       
     }
  
 // ADDING & SENDING NEW MESSAGES TO SERVER ===============================================
@@ -263,7 +266,7 @@ const Chat = ({location}) => {
                                                         {eachRoom.usersroom}
                                                     </span>
                                                 </button>
-                                                {eachRoom.usersroom === "General" ? null : <span onClick ={() => removeRoom(eachRoom.id, rooms.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
+                                                {eachRoom.usersroom === "General" ? null : <span onClick ={() => removeRoom(eachRoom.id, eachRoom.usersroom, rooms.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
                                             </li>;
                                     })
                                 }
@@ -282,7 +285,7 @@ const Chat = ({location}) => {
                 <div className="block__chatPage__mainbar">
                     <div className="block__chatPage__mainbar--chatbox" ref={chatWindow}  >
                         {messages.map(data => {
-                            //console.log(data)
+                            console.log(data)
                             let pointKey;
                             let boxClassName;
                             if (data.username === name){
