@@ -128,14 +128,7 @@ io.on('connect', (socket) => {
             
            
        }
-        // write an if statement that has looped through roomData
-        // checking if room exists
-
-        // room does not exists
-        // 1. Creating new room
-           
-            
-            
+   
         // 2. add room for the user and add users for the room
         //console.log("my new roomdata after adding a room ", roomsData)
         userData = userAddRoom({name, room, roomsData});
@@ -163,6 +156,11 @@ io.on('connect', (socket) => {
 
     socket.on('remove_room', ({name, room, roomId, userId}) => {
         console.log("REMOVE ROOM")
+
+        socket.leave(room, () => {
+            console.log("the user ", name, "leave room ", room)
+        })
+
         userData = userRemoveRoom({name, roomId, userData});
         console.log("after remove room data from USERDATA", userData);
 

@@ -164,6 +164,10 @@ const Chat = ({location}) => {
         });
         console.log(removeData)
         updateChatRooms(removeData) 
+
+        if(room === currentRoom) {
+            updateRoom("General");
+        }
        
     }
  

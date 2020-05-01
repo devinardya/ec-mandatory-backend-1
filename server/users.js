@@ -104,6 +104,8 @@ function userRemoveRoom({name, roomId, userData}) {
              console.log("result", copyDataChatRoom)
              eachUser.usersroom = copyDataChatRoom;
 
+             copyData.push(copyDataChatRoom);
+             saveUser();
          }
     })
 

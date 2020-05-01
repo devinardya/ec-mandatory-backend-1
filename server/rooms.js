@@ -207,10 +207,13 @@ function roomRemoveUser({room, userId, roomsData}) {
              console.log("result", copyDataChatRoom)
              eachChatRoom.username = copyDataChatRoom;
   
+             copyRoomData.push(copyDataChatRoom);
+             saveRoom();  
          }
          
      });
      console.log("DATA BEFORE RETURN", copyRoomData)
+       
 
     return copyRoomData;
 }
