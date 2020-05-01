@@ -82,7 +82,7 @@ function userAddRoom({name, room, roomsData}){
         // there is a room at the index roomExists
         // do nothing
         console.log('No new rooms was added to user ', name)
-        
+        //return { error: "ERROR: room is already exists!"}
     }
 
     return userList;

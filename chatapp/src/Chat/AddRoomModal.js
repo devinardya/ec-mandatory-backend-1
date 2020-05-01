@@ -10,6 +10,7 @@ const AddRoomModal = ({name, socket, updateAddingRoomStatus}) => {
     const [inputValue, updateInputValue] = useState("");
     const [modalStatus, updateModalStatus] = useState(true)
     const [errorStatus, updateErrorStatus] = useState(false)
+    const [errorText, updateErrorText] = useState("");
     
     const onChange = (e) => {
         let value = e.target.value;
@@ -23,11 +24,14 @@ const AddRoomModal = ({name, socket, updateAddingRoomStatus}) => {
         socket.emit('addingRoom', {name, room}, (error) => {
             if(error) {
                 console.log(error);
-                updateErrorStatus(true)
+                updateErrorText(error.error);
+                updateErrorStatus(true);
+                updateModalStatus(true); 
+            } else {
+                updateInputValue("");
+                updateModalStatus(false);
+                updateAddingRoomStatus(false);
             }
-        updateInputValue("");
-        updateModalStatus(false)
-        updateAddingRoomStatus(false)
         });
     }
 
@@ -50,7 +54,7 @@ const AddRoomModal = ({name, socket, updateAddingRoomStatus}) => {
                 <h2>Create new room</h2>
                 <form onSubmit={onSubmit}>
                     <input type="text" value={inputValue} placeholder="Enter new room" onChange={onChange} />
-                    {errorStatus ? <p>alert text would be here</p> : <p></p>}
+                    {errorStatus ? <p>{errorText}</p> : <p></p>}
                     <div className = "block__chatPage__sidebar--roomlist--modal--buttons">
                         <span onClick = {closeModal}>Close</span>
                         <button>Create</button>
