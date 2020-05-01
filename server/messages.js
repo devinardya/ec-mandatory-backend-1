@@ -18,7 +18,7 @@ function saveChat() {
 
 function newMessage({data}){
     data.id = uuid.v4();
-    console.log(data)
+    console.log("CHAT DATA", data)
 
     chat.push(data);
     saveChat();

@@ -88,5 +88,31 @@ function userAddRoom({name, room, roomsData}){
     return userList;
 }
 
+function userRemoveRoom({name, roomId, userData}) {
+    console.log("USER DATA", userData)
 
-module.exports = {userCreateUser, userAddRoom};
+    let copyData = [...userData];
+
+    copyData.map(eachUser => {
+
+        if(eachUser.username === name) {
+            console.log("username match")
+             const listIndex = eachUser.usersroom.findIndex (x => x.id === roomId);
+             console.log(listIndex)
+             let copyDataChatRoom = [...eachUser.usersroom]
+             copyDataChatRoom.splice(listIndex, 1)
+             console.log("result", copyDataChatRoom)
+             eachUser.usersroom = copyDataChatRoom;
+
+             copyData.push(copyDataChatRoom);
+             saveUser();
+         }
+    })
+
+    console.log("BEFORE RETURN", copyData);
+    return copyData;
+
+}
+
+
+module.exports = {userCreateUser, userAddRoom, userRemoveRoom};

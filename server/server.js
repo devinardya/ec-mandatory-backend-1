@@ -3,8 +3,8 @@ const app = express();
 const uuid = require('uuid'); 
 const fs = require('fs');
 
-const {userCreateUser, userAddRoom} = require('./users');
-const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms} = require('./rooms');
+const {userCreateUser, userAddRoom, userRemoveRoom} = require('./users');
+const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, roomRemoveUser} = require('./rooms');
 const {newMessage} = require('./messages');
 
 
@@ -45,29 +45,41 @@ io.on('connect', (socket) => {
         //const {error, user} = addUser({ id:socket.id, name, room})
         console.log("1. User joining chat. User ", name, " in room ",room)
 
+        let data = {
+            username: "Admin",
+            content: name + " has joined " + room,
+            chatRoom: room,
+            id : uuid.v4()
+        }
+        //chat = newMessage({data})
+        //socket.to(room).emit('statusUser', chat);
+        
         //===========================================
         //===========================================
 
         // 1. create room and user (or check if user and room already exists)
         userData = userCreateUser({name});
         roomsData = roomsInitiateRooms();
-        console.log('my current roomsdata', roomsData)
+        //console.log('my current roomsdata', roomsData)
       
         //===========================================
         //===========================================
 
         // 2. add room for the user and add users for the room
+        console.log('2. Adding user and room')
         userData = userAddRoom({name, room, roomsData});
         roomsData = roomsAddUsers({name, room, userData});
 
-        console.log("currentUserData", userData);
-        console.log("currentRoomsData", roomsData)
+        //console.log("currentUserData", userData);
+        //console.log("currentRoomsData", roomsData)
 
         //===========================================
         //===========================================
 
         // 3. add active user to the room
+        console.log('3. Adding active user to room ', room)
         activeUser = roomsAddActive({name, room, userData});
+        console.log('my current roomsdata', roomsData)
  
         //===========================================
         //===========================================
@@ -90,14 +102,7 @@ io.on('connect', (socket) => {
         console.log(roomsData)
         io.in(room).emit('updateUser', roomsData);
 
-        let grettingObj = {
-            username: "Admin",
-            content: name + " has joined " + room,
-            chatRoom: room,
-            id: uuid.v4()
-        }
-
-        socket.to(room).emit('incomingUser', grettingObj);
+        
 
         //===========================================
         //===========================================
@@ -105,14 +110,15 @@ io.on('connect', (socket) => {
         // 6. Sending chat history from json saved file
   
          let filteredChat = chat.filter( x => x.chatRoom === room)
+         //console.log("FILTEREDCHAT", filteredChat)
          io.in(room).emit('savedMessage', filteredChat);
     }); 
 
     socket.on('addingRoom', ({name, room}, cb) => {
 
-       console.log("ROOM DATA BEFORE ADDING", roomsData)
+       //console.log("ROOM DATA BEFORE ADDING", roomsData)
        let checkRoomList = roomsData.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
-       console.log("check room list", checkRoomList)
+       //console.log("check room list", checkRoomList)
        if (checkRoomList) {
             console.log("room exist")
             cb([{error: "ERROR: room is already exists!"}]);
@@ -122,22 +128,15 @@ io.on('connect', (socket) => {
             
            
        }
-        // write an if statement that has looped through roomData
-        // checking if room exists
-
-        // room does not exists
-        // 1. Creating new room
-           
-            
-            
+   
         // 2. add room for the user and add users for the room
-        console.log("my new roomdata after adding a room ", roomsData)
+        //console.log("my new roomdata after adding a room ", roomsData)
         userData = userAddRoom({name, room, roomsData});
-        console.log("my new userdata after adding a room ", userData)
+        //console.log("my new userdata after adding a room ", userData)
         roomsData = roomsAddUsers({name, room, userData});
 
-        console.log("USERDATA", userData);
-        console.log("ROOMSDATA", roomsData);
+        //console.log("USERDATA", userData);
+        //console.log("ROOMSDATA", roomsData);
         socket.emit('allRoomList', userData);
 
         cb();
@@ -148,13 +147,51 @@ io.on('connect', (socket) => {
     socket.on('new_message', (data) => {
         
         chat = newMessage({data})
-        socket.to(data.chatRoom).emit('new_message', chat);
+        let filteredChat = chat.filter( x => x.chatRoom === data.chatRoom)
+        socket.to(data.chatRoom).emit('new_message', filteredChat);
     });
 
+
+    // REMOVE ROOM
+
+    socket.on('remove_room', ({name, room, roomId, userId}) => {
+        console.log("REMOVE ROOM")
+
+        socket.leave(room, () => {
+            console.log("the user ", name, "leave room ", room)
+        })
+
+        userData = userRemoveRoom({name, roomId, userData});
+        console.log("after remove room data from USERDATA", userData);
+
+        roomsData = roomRemoveUser({room, userId, roomsData});
+        console.log("after remove user data from ROOMDATA", roomsData);
+
+        activeUser =  roomsRemoveActive({name, room})
+        console.log("ACTIVE USERS AFTER LEAVING", activeUser)
+        socket.to(room).emit('activeUsers', activeUser);
+
+        socket.emit('allRoomList', userData);
+        io.in(room).emit('updateUser', roomsData);
+
+    })
+
     socket.on('leave', ({name, room}) => {
-        console.log("LEAVING ROOMS!!!!!")
+        console.log(name, "LEAVING ROOMS!!!!!");
+
+        let data = {
+            username: "Admin",
+            content: name + " has left room ",
+            chatRoom: room,
+            id : uuid.v4()
+        }
+
+        //chat = newMessage({data})
+        //greeting.push(data)
+        //socket.to(room).emit('statusUser', chat);
 
         socket.leave(room);
+        
         activeUser =  roomsRemoveActive({name, room})
         console.log("ACTIVE USERS AFTER LEAVING", activeUser)
         socket.to(room).emit('activeUsers', activeUser);

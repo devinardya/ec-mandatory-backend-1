@@ -16,12 +16,6 @@ function saveRoom() {
     });
 };
 
-//To convert all room string value to Title Case
-function titleCase(str) {
-    return str.toLowerCase().split(' ').map(function(word) {
-      return (word.charAt(0).toUpperCase() + word.slice(1));
-    }).join(' ');
-}
 
 // Create a new room
 function roomsCreateRoom({room}){
@@ -61,10 +55,10 @@ function roomsCreateRoom({room}){
 function roomsInitiateRooms(){
     let roomExists = false;
     let copyFromArray;
-    let room = 'general';
+    let room = 'General';
     roomsList.map(eachRoom => {
         copyFromArray = eachRoom.usersroom.toLowerCase();
-        if (copyFromArray === room){
+        if (copyFromArray === room.toLowerCase()){
             // remember room already exist
             roomExists = true;
         } 
@@ -133,7 +127,7 @@ function roomsAddActive({name, room, userData}){
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom === room)
+    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     console.log("CURRENTROOM", currentRoom);
     currentUsers = currentRoom.activeUsers;
@@ -152,6 +146,7 @@ function roomsAddActive({name, room, userData}){
            }
         currentUsers.push(userData);
         saveRoom();
+        console.log(roomsList)
         console.log("A new active user: ", name, " was added to room ", room)
        
     } else {
@@ -173,28 +168,56 @@ function roomsRemoveActive({name, room}){
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom === room)
+    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     currentUsers = currentRoom.activeUsers;
+    console.log("CURRENT USER", currentUsers)
     // Does the user already exist in this room? 
-    userExists = currentUsers.findIndex(x => x.activeUsers === name);
-
+    userExists = currentUsers.findIndex(x => x.username === name);
+    console.log("USEREXIST", userExists)
     if (userExists === -1){
         // -1 === no matches 
-        currentUsers.splice(userExists,1);
-        console.log("Active user ", name, "was removed from room ", room)
+        
+      
         // do nothing
 
     } else {
+        currentUsers.splice(userExists,1);
+        console.log("Active user ", name, "was removed from room ", room)
         // there is a user to remove
         //currentUsers.splice(userExists,1);
-
-        
     }
-
+    console.log("CURRENTUSERS", currentUsers)
     return currentUsers;
+}
+
+function roomRemoveUser({room, userId, roomsData}) {
+
+    let copyRoomData = [...roomsData];
+
+    copyRoomData.map( eachChatRoom => {
+            console.log("EACH CHAT ROOM", eachChatRoom)
+        if(eachChatRoom.usersroom === room) {
+            console.log("room match")
+            
+             const listIndex = eachChatRoom.username.findIndex (x => x.id === userId);
+             console.log(listIndex)
+             let copyDataChatRoom = [...eachChatRoom.username]
+             copyDataChatRoom.splice(listIndex, 1)
+             console.log("result", copyDataChatRoom)
+             eachChatRoom.username = copyDataChatRoom;
+  
+             copyRoomData.push(copyDataChatRoom);
+             saveRoom();  
+         }
+         
+     });
+     console.log("DATA BEFORE RETURN", copyRoomData)
+       
+
+    return copyRoomData;
 }
 
 
 
-module.exports = {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms};
+module.exports = {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, roomRemoveUser};

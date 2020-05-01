@@ -1,8 +1,9 @@
-//import io from 'socket.io-client';
+/* import io from 'socket.io-client';
 
-/* const socket = io('localhost:3000');
+
 
 function setConnection(){
+    const socket = io('localhost:3000');
 
     function connect(){
         return new Promise((resolve, reject) => {
@@ -14,13 +15,8 @@ function setConnection(){
     return connect()
 }
 
-export {setConnection}; */
+export {setConnection};  */
 
-/* function DataMessagesUpdate(socket, cb){
-    socket.on('new_message', function(message){
-      console.log("new_message", message);
-      cb(null, message);
-    }); */
 
 function updateUser(socket, cb) {
     socket.on('updateUser', userlist => {
@@ -49,14 +45,14 @@ function getChatHistory(socket, cb) {
 
 export {getChatHistory};
 
-function getIncomingUser(socket, cb) {
-    socket.on('incomingUser', data => {
+function getStatusUser(socket, cb) {
+    socket.on('statusUser', data => {
     console.log(data);
     cb(null, data)
     })
 }
 
-export {getIncomingUser};
+export {getStatusUser};
 
 function getNewMessages(socket, cb) {
     socket.on('new_message', function(data){

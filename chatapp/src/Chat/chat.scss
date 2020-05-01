@@ -140,46 +140,86 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
             position: relative;
             margin-left: 20px;
 
-            h3{
-                @include h3-sidebar-style();
-            }
+            .block__chatPage__sidebar--roomlist--title {
+                @include flex-row(space-between, center);
 
-            button {
-                background: transparent;
-                border:none;
-                position: absolute;
-                top: 2px;
-                right: 15%;
-                color: $color-text-dark;
-
-                &:hover {
-                    cursor: pointer;
+                h3{
+                    @include h3-sidebar-style();
                 }
+    
+                button {
+                    background: transparent;
+                    border:none;
+                    position: absolute;
+                    top: 2px;
+                    right: 15%;
+                    color: $color-text-dark;
+    
+                    &:hover {
+                        color: $color-text-light;
+                        cursor: pointer;
+                    }
+                }
+
             }
 
             ul {
                 list-style-type: none;
+                margin-top: 10px;
 
-                .block__chatPage__sidebar--roomlist--roomsButton {
-         
+                .block__chatPage__sidebar--roomlist--room {
+                    @include flex-row(space-between, center);
+                    position: relative;
+                    width: 100%;
+
                     button {
-                        @include p-sidebar-style($color-text-dark);
-                        position: static;
-                        display: block;
+                        width: 80%;
+                        @include flex-row(flex-start, center);
+                        position: relative;
+                        border: none;
+                        background: transparent;
+
+                        &:hover {
+                            cursor: pointer;
+                        }
+
+                        .block__chatPage__sidebar--roomlist--roomsButton {
+                            color: $color-text-dark;
+                            margin-bottom: 10px;
+                            font-size: 14px;
+                            font-family: $NotoSansJP;
+                            margin-left: 0px;
+                        }
+
+                        .block__chatPage__sidebar--roomlist--roomsText {
+                            @include p-sidebar-style($color-text-dark);
+                            margin-left: 15px;
+                        }
+            
+                        .block__chatPage__sidebar--roomlist--roomsButton--active {
+                            margin-left: 0px;
+                            color: rgb(255, 115, 0);
+                            margin-bottom: 10px;
+                            font-size: 14px;
+                            font-family: $NotoSansJP;
+                            margin-left: 0px;
+                        }
+                    }
+
+                    .block__chatPage__sidebar--roomlist--room--delete {
+                        width: 18%;
+                        color: $color-text-light-grey;
+                        position: absolute;
+                        right: 8%;
+                        top: 0;
+
+                        &:hover {
+                            color: $color-tertiary-light-button;
+                            cursor: pointer;
+                        }
                     }
                 }
-    
-                .block__chatPage__sidebar--roomlist--roomsButton--active {
-        
-                    button {
-                        @include p-sidebar-style(rgb(255, 115, 0));
-                        position: static;
-                        display: block;
-                    }
-                }
-
             }
- 
         }
 
         .block__chatPage__sidebar--logoutButton {
