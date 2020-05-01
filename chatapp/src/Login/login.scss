@@ -45,7 +45,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 .block__loginPage--form {
     width: 50%;
     max-width: 600px;
-    height: 40%;
+    height: 45%;
     max-height: 400px;
     background: $color-primary;
     /* background: linear-gradient(208deg, rgba(64,110,142,1) 40%, rgba(142,168,195,1) 100%); */
@@ -118,6 +118,13 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                     cursor: pointer;
                   }
             }
+        }
+    }
+    .block__loginPage--form--authorization {
+            width: 80%;
+        .block__loginPage--form--authorization__warning {
+            color: white;
+            font-size: 12px;
         }
     }
 }
