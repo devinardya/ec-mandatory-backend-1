@@ -9,12 +9,13 @@ import { Redirect} from 'react-router-dom';
 
 
 let socket; 
+let defaultRoom = "General";
 
 const Chat = ({location}) => {
 
     const [input, updateInput] = useState("");
     const [messages, updateMessages] = useState([]);
-    const [currentRoom, updateRoom] = useState("General");
+    const [currentRoom, updateRoom] = useState(defaultRoom);
     const [chatRooms, updateChatRooms] =  useState([]);
     const [activeUserNow, updateActiveUsersNow] = useState([])
     const [users, updateUsers] = useState([]);
@@ -23,6 +24,7 @@ const Chat = ({location}) => {
     let name = location.state.user;
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
+    
   
    
 // SENDING JOINED ROOM & USER NAME TO SERVER ===============================================
@@ -83,9 +85,10 @@ const Chat = ({location}) => {
         //console.log(messages)
         getStatusUser( socket, (err, data) => {
             //console.log(data);
-            let message = data;
-            let copyMessage = [...messages];		
-            updateMessages([...copyMessage, message]);
+           /*  let message = data;
+            let copyMessage = [...messages];	 
+            updateMessages([...copyMessage, message]); */
+            updateMessages(data);
         });
     }, [messages])
 

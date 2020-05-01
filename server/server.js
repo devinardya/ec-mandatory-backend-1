@@ -30,6 +30,7 @@ let userData = [];
 let roomsData = [];
 let chat = [];
 
+
 // CONNECT TO SOCKET THEN JOIN THE DEFAULT ROOM =================================================================    
 
 io.on('connect', (socket) => {
@@ -48,9 +49,10 @@ io.on('connect', (socket) => {
             username: "Admin",
             content: name + " has joined " + room,
             chatRoom: room,
-            id : uuid.v4()
+            //id : uuid.v4()
         }
-        //chat = newMessage({data})
+
+        chat = newMessage({data})
         //socket.to(room).emit('statusUser', chat);
         
         //===========================================
@@ -108,9 +110,17 @@ io.on('connect', (socket) => {
       
         // 6. Sending chat history from json saved file
   
-         let filteredChat = chat.filter( x => x.chatRoom === room)
+        let filteredChat = chat.filter( x => x.chatRoom === room)
+
+        if (filteredChat.some(x => x.username === "Admin")) {
+            console.log("IT'S ADMIN")
+            socket.to(room).emit('statusUser', filteredChat);
+        } else {
+            io.in(room).emit('savedMessage', filteredChat);
+        }
+         
          //console.log("FILTEREDCHAT", filteredChat)
-         io.in(room).emit('savedMessage', filteredChat);
+         
     }); 
 
 // ADDING ROOM =================================================================    
@@ -121,21 +131,25 @@ io.on('connect', (socket) => {
        let checkRoomList = roomsData.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
        //console.log("check room list", checkRoomList)
        if (checkRoomList) {
-            console.log("ROOM EXIST")
-            //cb([{error: "ERROR: room is already exists!"}]);
-            console.log(userData)
-            let checkUsersRoom = userData.some( x => x.username === name)
+            userData.map( x => {
+                let checkstatus;
+                if (x.username === name) {
+                    console.log("found the same username")
+                    console.log(x.usersroom)
+                    checkstatus = x.usersroom.some(x => x.usersroom === room)
+                    console.log(checkstatus);
+                }
 
-            if(checkUsersRoom) {
-                cb({error: "ERROR: room is already exists!"});
-            } else {
-                userData = userAddRoom({name, room, roomsData});
-                console.log("my new userdata after adding a room ", userData)
-                roomsData = roomsAddUsers({name, room, userData});
-                socket.emit('allRoomList', userData);
-            }
-            
-            
+                if(checkstatus) {
+                    cb({error: "ERROR: room is already exists!"});
+                } else {
+                    userData = userAddRoom({name, room, roomsData});
+                    console.log("my new userdata after adding a room ", userData)
+                    roomsData = roomsAddUsers({name, room, userData});
+                    socket.emit('allRoomList', userData);
+                }
+                                  
+            })
        } else {
             console.log("room NOT exist")
             roomsData = roomsCreateRoom({room});
@@ -195,12 +209,11 @@ io.on('connect', (socket) => {
             username: "Admin",
             content: name + " has left room ",
             chatRoom: room,
-            id : uuid.v4()
+            //id : uuid.v4()
         }
 
-        //chat = newMessage({data})
-        //greeting.push(data)
-        //socket.to(room).emit('statusUser', chat);
+        chat = newMessage({data})
+        socket.to(room).emit('statusUser', chat);
 
         socket.leave(room);
         
