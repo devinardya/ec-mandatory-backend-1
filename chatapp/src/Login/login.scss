@@ -7,11 +7,8 @@
 
 $color-primary: #23395bff;
 $color-secondary: #406e8eff;
-$color-secondary-light: rgb(247, 242, 236);
-$color-tertiary: #a78a7fff;
-$color-secondary-dark: #735751ff;
-$color-text-darker: #8ea8c3ff;
-$color-text-light: #cbf7edff;
+$color-secondary-light: rgb(245, 245, 245);
+$color-text-light: #ffa84e;
 
 $width-button: 150px;
 
@@ -45,7 +42,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 .block__loginPage--form {
     width: 50%;
     max-width: 600px;
-    height: 45%;
+    height: 52%;
     max-height: 400px;
     background: $color-primary;
     /* background: linear-gradient(208deg, rgba(64,110,142,1) 40%, rgba(142,168,195,1) 100%); */
@@ -59,22 +56,25 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
     position: relative;
 
     .block__loginPage--form-top {
-        margin-bottom: 30px;
-        color: $color-text-light;
+        margin-bottom: 20px;
+        
 
         @mixin login-heading  {
             font-family: $Poppins;
             padding: 0 10px;
+            color: $color-secondary-light;
         }
 
-        h3 {
-            @include login-heading();
-            font-size: 35px;
+        .block__loginPage--form-top--logo {
+            width: 70%;
+            margin: auto;
+            margin-bottom: 30px;
         }
 
         h5{
             @include login-heading();
             font-size: 14px;
+            font-weight: 300;
         }
     }
 
@@ -93,7 +93,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
             padding-left: 20px;
             border-radius: 30px;
             border: none;
-            margin-right: 15px;
+            margin-right: -5px;
             font-size: 16px;
         }
 
@@ -121,10 +121,20 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
         }
     }
     .block__loginPage--form--authorization {
-            width: 80%;
+            width: 70%;
+            text-align: left;
+            line-height: 16px;
         .block__loginPage--form--authorization__warning {
             color: white;
             font-size: 12px;
+            position: relative;
+            padding-left: 15px;
+
+            .icons {
+                position: absolute;
+                top: 2px;
+                left: -5px;
+            }
         }
     }
 }
