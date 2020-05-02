@@ -9,6 +9,7 @@ const UserList = ({
 }) => {
 
     return <>
+            <h3>Users</h3>
             <ul>
                 {users.map(user => {
                     //console.log("USER", user)

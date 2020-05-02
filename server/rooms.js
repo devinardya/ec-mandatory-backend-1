@@ -20,12 +20,12 @@ function saveRoom() {
 // Create a new room
 function roomsCreateRoom({room}){
     let roomExists = false;
-    let copyRoom = room.toLowerCase();
+    let copyRoom = room;
 
 
 
     roomsList.map(eachRoom => {
-        let copyFromArray = eachRoom.usersroom.toLowerCase();
+        let copyFromArray = eachRoom.usersroom;
         if (copyFromArray === copyRoom){
             // remember room already exist
             roomExists = true;
@@ -57,8 +57,8 @@ function roomsInitiateRooms(){
     let copyFromArray;
     let room = 'General';
     roomsList.map(eachRoom => {
-        copyFromArray = eachRoom.usersroom.toLowerCase();
-        if (copyFromArray === room.toLowerCase()){
+        copyFromArray = eachRoom.usersroom;
+        if (copyFromArray === room){
             // remember room already exist
             roomExists = true;
         } 
@@ -90,7 +90,7 @@ function roomsAddUsers({name, room, userData}){
     // Find the current room
     console.log('roomslist ', roomsList)
     console.log('room ', room)
-    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase());
+    currentRoom = roomsList.find(x => x.usersroom === room);
     console.log('my user data', userData)
     console.log('current Room', currentRoom)
     console.log('current Room users', currentRoom.username);
@@ -127,7 +127,7 @@ function roomsAddActive({name, room, userData}){
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
+    currentRoom = roomsList.find(x => x.usersroom === room)
     // Find rooms current users
     console.log("CURRENTROOM", currentRoom);
     currentUsers = currentRoom.activeUsers;
@@ -168,7 +168,7 @@ function roomsRemoveActive({name, room}){
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
+    currentRoom = roomsList.find(x => x.usersroom === room)
     // Find rooms current users
     currentUsers = currentRoom.activeUsers;
     console.log("CURRENT USER", currentUsers)

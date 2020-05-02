@@ -129,7 +129,7 @@ io.on('connect', (socket) => {
     socket.on('addingRoom', ({name, room}, cb) => {
 
        //console.log("ROOM DATA BEFORE ADDING", roomsData)
-       let checkRoomList = roomsData.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
+       let checkRoomList = roomsData.some(x => x.usersroom === room)
        //console.log("check room list", checkRoomList)
        if (checkRoomList) {
             userData.map( x => {
