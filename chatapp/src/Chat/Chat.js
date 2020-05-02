@@ -4,10 +4,10 @@ import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Redirect} from 'react-router-dom';
 import {updateUser, updateCurrentRoom, getChatHistory, getStatusUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
 import '../Chat/chat.scss';
-import logoIcon from '../Design/logo-lightbg.svg';
 import Chatbox from '../Chat/Chatbox';
 import RoomList from '../Chat/RoomList';
 import UserList from '../Chat/UserList';
+import Header from '../Chat/Header';
 
 
 let socket; 
@@ -212,24 +212,11 @@ const Chat = ({location}) => {
                     <title>Kongko Chat - {currentRoom}</title>
                 </Helmet>
                 <div className="block__chatPage">
-                    <header className="block__chatPage--header">
-                        <div className = "block__chatPage--header--logo">
-                            <figure className="block__chatPage__header--image">
-                                <img src={logoIcon} alt="kongko logo" />
-                            </figure>
-                        </div>
-                        <div className="block__chatPage__header--userbox">
-                            <h2 className="block__chatPage__header--userbox--user">Welcome, {name}</h2>
-                            <span> || </span>
-                            <h2 className="block__chatPage__header--userbox--room">
-                                <span>Room: </span>
-                                {currentRoom}</h2>
-                            <span> || </span>
-                            <button onClick={logout}>
-                                Log out
-                            </button>
-                        </div>
-                    </header>
+                    <Header
+                        currentRoom = {currentRoom}
+                        name = {name}
+                        logout = {logout} 
+                    />
                     <main className="block__chatPage--main">
                         <div className="block__chatPage__sidebar">
                             <div className="block__chatPage__sidebar--userlist">
