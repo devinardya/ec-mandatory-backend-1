@@ -49,30 +49,31 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
     .block__chatPage__sidebar {
         width: 20%;
         height: 100%;
-        background-color: #fff;
-        /* background: url(../Design/sidebar-03-03.svg); 
-        filter: brightness(1.3);  */
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center center;   
+        background-color: rgb(247, 247, 247); 
         @include flex-column(flex-start, flex-start);
         padding: 20px 20px 20px 0px;
         text-align: left;
         font-family: $Poppins;
         z-index: 2;
-        -webkit-box-shadow: 25px 6px 39px -26px rgba(133,133,133,1);
-        -moz-box-shadow: 25px 6px 39px -26px rgba(133,133,133,1);
-        box-shadow: 25px 6px 39px -26px rgba(133,133,133,1);
+        -webkit-box-shadow: 25px 6px 39px -26px rgb(192, 192, 192);
+        -moz-box-shadow: 25px 6px 39px -26px rgb(192, 192, 192);
+        box-shadow: 25px 6px 39px -26px rgb(192, 192, 192);
+
+        .block__chatPage__sidebar--logo {
+            width: 70%;
+            padding-left: 10px;
+        }
 
         .block__chatPage__sidebar--userbox {
             width: 100%;
-            border-bottom: 1px dashed $color-secondary-light ;
-            margin-left: 20px;
+            border-bottom: 1px dashed $color-text-light ;
+            padding: 0;
+            margin: 0px 20px;
 
             h2 {
                 color: $color-text-dark2;
                 font-weight: bold;
-                margin-bottom: 10px;
+                margin: 10px 0;
                 font-size: 14px;
             }
         }
@@ -102,11 +103,11 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 
         .block__chatPage__sidebar--userlist{
             width: 100%;
-            margin-bottom: 30px;
             margin-left: 20px;
             overflow-y: scroll;
-            max-height: 43%;
-            padding-top: 30px;
+            max-height: 35%;
+            padding: 30px 30px 30px 0;
+            border-bottom: 1px dashed $color-text-light;
 
             .block__chatPage__sidebar--userlist--box {
                 @include flex-row(flex-start, center);
@@ -136,9 +137,12 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 
         .block__chatPage__sidebar--roomlist {
             width: 100%;
-            margin-bottom: 20px;
+            overflow-y: scroll;
+            max-height: 35%;
             position: relative;
-            margin-left: 20px;
+            margin: 30px 0px 30px 20px;
+            padding-bottom: 30px;
+            border-bottom: 1px dashed $color-text-light;
 
             .block__chatPage__sidebar--roomlist--title {
                 @include flex-row(space-between, center);
@@ -151,7 +155,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                     background: transparent;
                     border:none;
                     position: absolute;
-                    top: 2px;
+                    top: 30px;
                     right: 15%;
                     color: $color-text-dark;
     
@@ -184,7 +188,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                         }
 
                         .block__chatPage__sidebar--roomlist--roomsButton {
-                            color: $color-text-dark;
+                            color: $color-text-light-grey;
                             margin-bottom: 10px;
                             font-size: 14px;
                             font-family: $NotoSansJP;
@@ -214,7 +218,7 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                         top: 0;
 
                         &:hover {
-                            color: $color-tertiary-light-button;
+                            color: $color-text-light;
                             cursor: pointer;
                         }
                     }
@@ -387,10 +391,10 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
 
         .block__chatPage__mainbar--form {
             width: 100%;
-            height: calc(15% - 10px);
-            margin-bottom: 10px;
+            height: calc(15% - 20px);
+            margin-bottom: 20px;
             @include flex-row(center, center);
-            padding: 35px 35px 0 35px;
+            padding: 25px 35px 0 35px;
 
             form {
                 width: 95%;
@@ -402,16 +406,41 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                     height: 40px;
                     font-size: 14px;
                     padding-left: 20px;
+                    border-top: none;
+                    border-left: none;
+                    border-right: none;
+                    border-bottom: 3px solid $color-text-light;
                 }
+
+                input:focus::-webkit-input-placeholder {
+                    opacity: 0;
+                }
+                input:focus::-moz-placeholder {
+                   opacity: 0;
+                }
+                 
+                input:focus:-ms-input-placeholder {
+                    opacity: 0;
+                }
+                 
+                input:focus:-moz-placeholder {
+                   opacity: 0;
+                 }
 
                 button {
                     width: calc(20% - 10px);
                     height: 40px;
                     margin-left: 10px;
                     border: none;
-                    background-color: $color-tertiary-light-button;
+                    background-color: $color-text-light;
                     color: $color-primary-light;
                     font-size: 14px;
+                    border-radius: 10px;
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: darken($color-text-light, 15%);
+                    }
                 }
             }
         }
