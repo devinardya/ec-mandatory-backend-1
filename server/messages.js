@@ -20,7 +20,7 @@ function newMessage({data}){
 
     if(data.username === "Admin") {
         data.id = uuid.v4();
-        console.log("CHAT DATA", data)
+        console.log("CHAT DATA FROM ADMIN", data)
 
         chat.push(data);
     } else {

@@ -1,11 +1,14 @@
 import React, {useEffect, useState, useRef} from 'react';
 import io from 'socket.io-client';
-import AddRoomModal from '../Chat/AddRoomModal';
-import {updateUser, updateCurrentRoom, getChatHistory, getStatusUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
-import { IoIosAddCircleOutline, IoMdLogOut, IoIosContact, IoIosChatbubbles} from 'react-icons/io';
-import {TiDelete} from 'react-icons/ti';
-import '../Chat/chat.scss';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Redirect} from 'react-router-dom';
+import {updateUser, updateCurrentRoom, getChatHistory, getStatusUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
+import { IoMdLogOut} from 'react-icons/io';
+import '../Chat/chat.scss';
+import logoIcon from '../Design/logo-lightbg.svg';
+import Chatbox from '../Chat/Chatbox';
+import RoomList from '../Chat/RoomList';
+import UserList from '../Chat/UserList';
 
 
 let socket; 
@@ -25,8 +28,6 @@ const Chat = ({location}) => {
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
     
-  
-   
 // SENDING JOINED ROOM & USER NAME TO SERVER ===============================================
 
     useEffect( () => {
@@ -118,11 +119,6 @@ const Chat = ({location}) => {
     
 // ADDING NEW ROOMS ===============================================
 
-    const onAddingRoom = () => {
-        
-        updateAddingRoomStatus(true);
-        console.log(addingRoomStatus)
-    }
 
     useEffect( () => {
         console.log("GETTING ALL CHAT ROOM")
@@ -176,14 +172,14 @@ const Chat = ({location}) => {
  
 // ADDING & SENDING NEW MESSAGES TO SERVER ===============================================
 
-    const onChange = (e) => {
-        let value = e.target.value;
+    const onChange = (value) => {
+        //let value = e.target.value;
         updateInput(value);
     }
 
     // sending message
-    const onSubmit = (e) => {
-        e.preventDefault();
+    const onSubmit = (input) => {
+        //e.preventDefault();
    
         socket.emit("new_message",{
             username: name,
@@ -212,121 +208,57 @@ const Chat = ({location}) => {
         return <Redirect to="/"/>
     }
 
-    return <div className="block__chatPage">
-                <div className="block__chatPage__sidebar">
-                    <div className="block__chatPage__sidebar--userbox">
-                        <h2>Welcome, {name}</h2>
-                    </div>
-                    <div className="block__chatPage__sidebar--userlist">
-                        <ul>
-                        {users.map(user => {
-                            //console.log("USER", user)
-                            let printUserList;
-                            if(user.usersroom === currentRoom){
-                                //console.log("ACTIVE USER IN CURRENT ROOM",activeUserNow, currentRoom)
-                                printUserList = user.username.map(eachUser => {
-                                                    //console.log("eachUser", eachUser)
-                                                    return (<li key={eachUser.id} className="block__chatPage__sidebar--userlist--box">
-                                                                {activeUserNow.some(x => x.username === eachUser.username)
-                                                                ? <span className="block__chatPage__sidebar--userlist--box--dot--active">< IoIosContact size="40px" color="white"/></span>
-                                                                : <span className="block__chatPage__sidebar--userlist--box--dot">< IoIosContact size="40px" color="white"/></span>}
-                                                                <p>{eachUser.username}</p>
-                                                            </li>)
-                                                })
-                            }
-
-                            return printUserList;
-                        })}
-                        </ul>
-                    </div>
-                    <div className="block__chatPage__sidebar--roomlist">
-                        <div className="block__chatPage__sidebar--roomlist--title">
-                            <h3>Room list</h3>
-                            <button onClick = {onAddingRoom}><IoIosAddCircleOutline size="24px"/></button>
-                            { addingRoomStatus && <AddRoomModal name = {name} 
-                                                                socket = {socket}
-                                                                updateAddingRoomStatus = {updateAddingRoomStatus}
-                                                />}
+    return <HelmetProvider>
+                <Helmet>
+                    <title>Kongko Chat - {currentRoom}</title>
+                </Helmet>
+                <div className="block__chatPage">
+                    <div className="block__chatPage__sidebar">
+                        <figure className="block__chatPage__sidebar--logo">
+                            <img src={logoIcon} alt="bercakap logo" />
+                        </figure>
+                        <div className="block__chatPage__sidebar--userbox">
+                            <h2>Welcome, {name}</h2>
                         </div>
-                        
-                        <ul>
-                            {chatRooms.map(rooms => {
-                                //console.log("CHATROOM", rooms)
-                                let printList;
-                                if (rooms.username === name){
-
-                                printList = rooms.usersroom.map( eachRoom => {
-                                    //console.log("the rooms in usersroom", eachRoom.usersroom, currentRoom)
-                                    let activeRoom;
-                                    if(eachRoom.usersroom === currentRoom){
-                                        activeRoom = "block__chatPage__sidebar--roomlist--roomsButton--active";
-                                    } else if (eachRoom.usersroom !== currentRoom){
-                                        activeRoom = "block__chatPage__sidebar--roomlist--roomsButton";
-                                    }
-
-                                    return <li key={eachRoom.id} className= "block__chatPage__sidebar--roomlist--room">
-                                                <button onClick={ () => switchRoom(eachRoom.usersroom)}>
-                                                    <span className= {activeRoom}>
-                                                        <IoIosChatbubbles size="22px"/>
-                                                    </span>
-                                                    <span className = "block__chatPage__sidebar--roomlist--roomsText">
-                                                        {eachRoom.usersroom}
-                                                    </span>
-                                                </button>
-                                                {eachRoom.usersroom === "General" ? null : <span onClick ={() => removeRoom(eachRoom.id, eachRoom.usersroom, rooms.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
-                                            </li>;
-                                    })
-                                }
-                                return printList;
-                            })
-                            }
-                        </ul>
+                        <div className="block__chatPage__sidebar--userlist">
+                            <UserList 
+                                currentRoom = {currentRoom}
+                                users = {users}
+                                activeUserNow = {activeUserNow}
+                            />
+                        </div>
+                        <div className="block__chatPage__sidebar--roomlist">
+                            <RoomList 
+                                chatRooms = {chatRooms}
+                                name = {name}
+                                currentRoom = {currentRoom}
+                                switchRoom = {switchRoom}
+                                removeRoom = {removeRoom}
+                                socket = {socket}
+                                updateAddingRoomStatus = {updateAddingRoomStatus}
+                                addingRoomStatus = {addingRoomStatus}
+                            />
+                        </div>
+                        <div className="block__chatPage__sidebar--logoutButton">
+                            <button onClick={logout}>
+                                <IoMdLogOut className="block__chatPage__sidebar--logoutButton--icon" size="20px"/>
+                                Log out
+                            </button>
+                        </div>
                     </div>
-                    <div className="block__chatPage__sidebar--logoutButton">
-                        <button onClick={logout}>
-                            <IoMdLogOut className="block__chatPage__sidebar--logoutButton--icon" size="20px"/>
-                            Log out
-                        </button>
+                    <div className="block__chatPage__mainbar">
+                        <Chatbox 
+                            onSubmit = {onSubmit}
+                            messages = {messages}
+                            onChange = {onChange}
+                            input = {input}
+                            chatWindow = {chatWindow}
+                            name = {name}
+                            activeUserNow = {activeUserNow}
+                        />
                     </div>
                 </div>
-                <div className="block__chatPage__mainbar">
-                    <div className="block__chatPage__mainbar--chatbox" ref={chatWindow}  >
-                        {messages.map(data => {
-                            console.log(data)
-                            let pointKey;
-                            let boxClassName;
-                            if (data.username === name){
-                                pointKey = "messages-"+ Math.round(Math.random() * 99999999999);
-                                boxClassName = "block__chatPage__mainbar--chatbox--message--sender"
-                            } else if (data.username === "Admin"){
-                                pointKey = data.id;
-                                boxClassName = "block__chatPage__mainbar--chatbox--message--admin"
-                            } else {
-                                pointKey = data.id;
-                                boxClassName = "block__chatPage__mainbar--chatbox--message--incoming"
-                            }
-                            //console.log(data)
-                            return <div className={boxClassName} key={pointKey}>
-                                        {activeUserNow.find(x => x === data.username)
-                                         ? <span className="block__chatPage__mainbar--chatbox--message--image--active">< IoIosContact size="35px" color="white"/></span>
-                                         : <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span>}        
-                                        {/* <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span> */}
-                                        <div className="block__chatPage__mainbar--chatbox--message--blockText">
-                                            <p className="block__chatPage__mainbar--chatbox--message--username">{data.username}</p>
-                                            <p className="block__chatPage__mainbar--chatbox--message--text">{data.content}</p>
-                                        </div>
-                                    </div> 
-                            })
-                        } 
-                    </div>
-                    <div className="block__chatPage__mainbar--form">
-                        <form onSubmit = {onSubmit}>
-                            <input onChange={onChange} type="text" placeholder="Enter messages..."  value={input}></input>
-                            <button>Submit</button>
-                        </form>
-                    </div>
-                </div>
-           </div>
+            </HelmetProvider>
 }
 
 export default Chat;

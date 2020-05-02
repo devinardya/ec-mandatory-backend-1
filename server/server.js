@@ -115,6 +115,7 @@ io.on('connect', (socket) => {
         if (filteredChat.some(x => x.username === "Admin")) {
             console.log("IT'S ADMIN")
             socket.to(room).emit('statusUser', filteredChat);
+            io.in(room).emit('savedMessage', filteredChat);
         } else {
             io.in(room).emit('savedMessage', filteredChat);
         }
