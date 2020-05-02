@@ -17,7 +17,7 @@ const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeU
 
     return <>
             <div className="block__chatPage__mainbar--chatbox" ref={chatWindow}  >
-                {messages.map(data => {
+                {messages.length !== 0 ? messages.map(data => {
                     console.log(data)
                     let pointKey;
                     let boxClassName;
@@ -36,14 +36,14 @@ const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeU
                                 {activeUserNow.find(x => x === data.username)
                                     ? <span className="block__chatPage__mainbar--chatbox--message--image--active">< IoIosContact size="35px" color="white"/></span>
                                     : <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span>}        
-                                {/* <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span> */}
+                               
                                 <div className="block__chatPage__mainbar--chatbox--message--blockText">
                                     <p className="block__chatPage__mainbar--chatbox--message--username">{data.username}</p>
                                     <p className="block__chatPage__mainbar--chatbox--message--text">{data.content}</p>
                                 </div>
                             </div> 
                     })
-                } 
+                : null} 
             </div>
             <div className="block__chatPage__mainbar--form">
                 <form onSubmit = {onSendSubmit}>

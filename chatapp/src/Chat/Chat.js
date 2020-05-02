@@ -3,7 +3,6 @@ import io from 'socket.io-client';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Redirect} from 'react-router-dom';
 import {updateUser, updateCurrentRoom, getChatHistory, getStatusUser, getNewMessages, getActiveUsers, getAllRoomsList} from '../socket';
-import { IoMdLogOut} from 'react-icons/io';
 import '../Chat/chat.scss';
 import logoIcon from '../Design/logo-lightbg.svg';
 import Chatbox from '../Chat/Chatbox';
@@ -213,50 +212,59 @@ const Chat = ({location}) => {
                     <title>Kongko Chat - {currentRoom}</title>
                 </Helmet>
                 <div className="block__chatPage">
-                    <div className="block__chatPage__sidebar">
-                        <figure className="block__chatPage__sidebar--logo">
-                            <img src={logoIcon} alt="bercakap logo" />
-                        </figure>
-                        <div className="block__chatPage__sidebar--userbox">
-                            <h2>Welcome, {name}</h2>
+                    <header className="block__chatPage--header">
+                        <div className = "block__chatPage--header--logo">
+                            <figure className="block__chatPage__header--image">
+                                <img src={logoIcon} alt="kongko logo" />
+                            </figure>
                         </div>
-                        <div className="block__chatPage__sidebar--userlist">
-                            <UserList 
-                                currentRoom = {currentRoom}
-                                users = {users}
-                                activeUserNow = {activeUserNow}
-                            />
-                        </div>
-                        <div className="block__chatPage__sidebar--roomlist">
-                            <RoomList 
-                                chatRooms = {chatRooms}
-                                name = {name}
-                                currentRoom = {currentRoom}
-                                switchRoom = {switchRoom}
-                                removeRoom = {removeRoom}
-                                socket = {socket}
-                                updateAddingRoomStatus = {updateAddingRoomStatus}
-                                addingRoomStatus = {addingRoomStatus}
-                            />
-                        </div>
-                        <div className="block__chatPage__sidebar--logoutButton">
+                        <div className="block__chatPage__header--userbox">
+                            <h2 className="block__chatPage__header--userbox--user">Welcome, {name}</h2>
+                            <span> || </span>
+                            <h2 className="block__chatPage__header--userbox--room">
+                                <span>Room: </span>
+                                {currentRoom}</h2>
+                            <span> || </span>
                             <button onClick={logout}>
-                                <IoMdLogOut className="block__chatPage__sidebar--logoutButton--icon" size="20px"/>
                                 Log out
                             </button>
                         </div>
-                    </div>
-                    <div className="block__chatPage__mainbar">
-                        <Chatbox 
-                            onSubmit = {onSubmit}
-                            messages = {messages}
-                            onChange = {onChange}
-                            input = {input}
-                            chatWindow = {chatWindow}
-                            name = {name}
-                            activeUserNow = {activeUserNow}
-                        />
-                    </div>
+                    </header>
+                    <main className="block__chatPage--main">
+                        <div className="block__chatPage__sidebar">
+                            <div className="block__chatPage__sidebar--userlist">
+                                <UserList 
+                                    currentRoom = {currentRoom}
+                                    users = {users}
+                                    activeUserNow = {activeUserNow}
+                                />
+                            </div>
+                            <div className="block__chatPage__sidebar--roomlist">
+                                <RoomList 
+                                    chatRooms = {chatRooms}
+                                    name = {name}
+                                    currentRoom = {currentRoom}
+                                    switchRoom = {switchRoom}
+                                    removeRoom = {removeRoom}
+                                    socket = {socket}
+                                    updateAddingRoomStatus = {updateAddingRoomStatus}
+                                    addingRoomStatus = {addingRoomStatus}
+                                />
+                            </div>
+                            
+                        </div>
+                        <div className="block__chatPage__mainbar">
+                            <Chatbox 
+                                onSubmit = {onSubmit}
+                                messages = {messages}
+                                onChange = {onChange}
+                                input = {input}
+                                chatWindow = {chatWindow}
+                                name = {name}
+                                activeUserNow = {activeUserNow}
+                            />
+                        </div>
+                    </main>
                 </div>
             </HelmetProvider>
 }
