@@ -52,7 +52,7 @@ io.on('connect', (socket) => {
             //id : uuid.v4()
         }
 
-        chat = newMessage({data})
+        //chat = newMessage({data})
         //socket.to(room).emit('statusUser', chat);
         
         //===========================================
@@ -128,30 +128,35 @@ io.on('connect', (socket) => {
 
     socket.on('addingRoom', ({name, room}, cb) => {
 
-       //console.log("ROOM DATA BEFORE ADDING", roomsData)
-       let checkRoomList = roomsData.some(x => x.usersroom === room)
-       //console.log("check room list", checkRoomList)
-       if (checkRoomList) {
+        console.log("ROOM DATA BEFORE ADDING", roomsData)
+        let checkRoomList = roomsData.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
+        console.log("check room list", checkRoomList)
+        if (checkRoomList) {
+            let checkstatus;
             userData.map( x => {
-                let checkstatus;
+                
+                console.log("ENTER HERE")
+                console.log("X USERNAME, USERNAME", x.username, name)
                 if (x.username === name) {
                     console.log("found the same username")
-                    console.log(x.usersroom)
-                    checkstatus = x.usersroom.some(x => x.usersroom === room)
-                    console.log(checkstatus);
+                    console.log("X.USERROOM", x.usersroom)
+                    checkstatus = x.usersroom.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
+                    console.log("CHECKSTATUS", checkstatus);
                 }
-
-                if(checkstatus) {
-                    cb({error: "ERROR: room is already exists!"});
-                } else {
-                    userData = userAddRoom({name, room, roomsData});
-                    console.log("my new userdata after adding a room ", userData)
-                    roomsData = roomsAddUsers({name, room, userData});
-                    socket.emit('allRoomList', userData);
-                }
-                                  
             })
-       } else {
+
+            if(checkstatus) {
+                cb({error: "ERROR: room is already exists!"});
+            } else {
+                userData = userAddRoom({name, room, roomsData});
+                console.log("my new userdata after adding a room ", userData)
+                roomsData = roomsAddUsers({name, room, userData});
+                socket.emit('allRoomList', userData);
+            }
+
+
+
+        } else {
             console.log("room NOT exist")
             roomsData = roomsCreateRoom({room});
 
@@ -213,8 +218,8 @@ io.on('connect', (socket) => {
             //id : uuid.v4()
         }
 
-        chat = newMessage({data})
-        socket.to(room).emit('statusUser', chat);
+      /*   chat = newMessage({data})
+        socket.to(room).emit('statusUser', chat); */
 
         socket.leave(room);
         

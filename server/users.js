@@ -58,7 +58,7 @@ function userAddRoom({name, room, roomsData}){
     // Find users current room
     currentRooms = currentUser.usersroom ;
     // Does the room already exist for this user? 
-    roomExists = currentRooms.findIndex(x => x.usersroom  === room);
+    roomExists = currentRooms.findIndex(x => x.usersroom.toLowerCase()  === room.toLowerCase());
 
     console.log(/* currentUser, currentRooms,  */roomExists, room)
 
@@ -66,11 +66,11 @@ function userAddRoom({name, room, roomsData}){
         // -1 === no matches 
         // add the room for the user
         console.log("RoomsData", roomsData)
-        let thisroom = roomsData.findIndex(x => x.usersroom === room);
+        let thisroom = roomsData.findIndex(x => x.usersroom.toLowerCase() === room.toLowerCase());
 
         console.log("the room: ", thisroom)
         console.log("the room: ", roomsData)
-        console.log('roar ', room)
+        console.log('roar ', room.toLowerCase())
 
         roomData = { usersroom  : roomsData[thisroom].usersroom ,  
                     id : roomsData[thisroom].id

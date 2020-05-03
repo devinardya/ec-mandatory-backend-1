@@ -173,11 +173,14 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                     overflow-y: scroll;
                     max-height: 300px;
 
+                    &:last-child {
+                        border-bottom: 1px solid #dfdfdf;
+                    }
+
                     .block__chatPage__sidebar--userlist--box {
                         @include flex-row(flex-start, center);
                         position: relative;
                         padding: 20px 0px;
-                        border-bottom: 1px solid #dfdfdf;
                         border-top: 1px solid #dfdfdf;
     
                         .block__chatPage__sidebar--userlist--box--dot {
@@ -240,12 +243,18 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                     overflow-y: scroll;
                     max-height: 250px;
 
+                    &:last-child {
+                        border-bottom: 1px solid #dfdfdf;
+                    }
+
                     .block__chatPage__sidebar--roomlist--room {
                         @include flex-row(space-between, center);
                         position: relative;
-                        border-bottom: 1px solid #dfdfdf;
+                        
                         border-top: 1px solid #dfdfdf;
                         padding: 20px 0px;
+
+                        
 
                         button {
                             width: 100%;

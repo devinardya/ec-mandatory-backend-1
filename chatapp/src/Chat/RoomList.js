@@ -34,7 +34,7 @@ const RoomList = ({
 
     return <>
             <div className="block__chatPage__sidebar--roomlist--title">
-                <h3>Room list</h3>
+                <h3>Rooms</h3>
                 <button onClick = {onAddingRoom}><IoIosAddCircleOutline size="24px"/></button>
                 { addingRoomStatus && <AddRoomModal name = {name} 
                                                     socket = {socket}
