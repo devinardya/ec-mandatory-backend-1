@@ -4,7 +4,7 @@ const uuid = require('uuid');
 
 const {userCreateUser, userAddRoom, userRemoveRoom} = require('./users');
 const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, roomRemoveUser} = require('./rooms');
-const {newMessage} = require('./messages');
+const {newMessage, statusMessages} = require('./messages');
 
 
 // ===============
@@ -29,6 +29,7 @@ let activeUser = [];
 let userData = [];
 let roomsData = [];
 let chat = [];
+let greeting = [];
 
 
 // CONNECT TO SOCKET THEN JOIN THE DEFAULT ROOM =================================================================    
@@ -49,11 +50,11 @@ io.on('connect', (socket) => {
             username: "Admin",
             content: name + " has joined " + room,
             chatRoom: room,
-            //id : uuid.v4()
+            id : uuid.v4()
         }
 
-        //chat = newMessage({data})
-        //socket.to(room).emit('statusUser', chat);
+        greeting = statusMessages({data})
+        //socket.to(room).emit('statusUser', statsMsg);
         
         //===========================================
         //===========================================
@@ -111,14 +112,17 @@ io.on('connect', (socket) => {
         // 6. Sending chat history from json saved file
   
         let filteredChat = chat.filter( x => x.chatRoom === room)
+        socket.to(room).emit('statusUser', greeting);
+        io.in(room).emit('savedMessage', filteredChat);
+        
 
-        if (filteredChat.some(x => x.username === "Admin")) {
+      /*   if (filteredChat.some(x => x.username === "Admin")) {
             console.log("IT'S ADMIN")
-            socket.to(room).emit('statusUser', filteredChat);
             io.in(room).emit('savedMessage', filteredChat);
+            socket.to(room).emit('statusUser', filteredChat);
         } else {
             io.in(room).emit('savedMessage', filteredChat);
-        }
+        }  */
          
          //console.log("FILTEREDCHAT", filteredChat)
          
@@ -215,11 +219,11 @@ io.on('connect', (socket) => {
             username: "Admin",
             content: name + " has left room ",
             chatRoom: room,
-            //id : uuid.v4()
+            id : uuid.v4()
         }
 
-      /*   chat = newMessage({data})
-        socket.to(room).emit('statusUser', chat); */
+        greeting = statusMessages({data})
+        socket.to(room).emit('statusUser', greeting); 
 
         socket.leave(room);
         

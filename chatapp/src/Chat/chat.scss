@@ -448,6 +448,10 @@ $NotoSansJP : 'Noto Sans JP', sans-serif;
                         color: $color-text-dark;
                     }
                 }
+
+                .block__chatPage__mainbar--chatbox--message--admin-null {
+                    display: none;
+                }
             }
 
             .block__chatPage__mainbar--form {

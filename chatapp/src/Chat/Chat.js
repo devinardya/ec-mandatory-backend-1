@@ -19,6 +19,7 @@ const Chat = ({location}) => {
     const [messages, updateMessages] = useState([]);
     const [currentRoom, updateRoom] = useState(defaultRoom);
     const [chatRooms, updateChatRooms] =  useState([]);
+    const [adminMsg, updateAdminMsg] = useState([]);
     const [activeUserNow, updateActiveUsersNow] = useState([])
     const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
@@ -84,13 +85,17 @@ const Chat = ({location}) => {
         console.log("STATUS USER")
         //console.log(messages)
         getStatusUser( socket, (err, data) => {
-            //console.log(data);
-           /*  let message = data;
-            let copyMessage = [...messages];	 
-            updateMessages([...copyMessage, message]); */
-            updateMessages(data);
+        /* console.log(data);
+        let message = data;
+        let copyMessage = [...messages];	 
+        updateMessages([...copyMessage, message]);  */
+            //updateMessages(data);
+            /* let message = data;
+            let copyMessage = [...adminMsg]; */
+            //copyMessage.splice(0, 1);	
+            updateAdminMsg(data)
         });
-    }, [messages])
+    }, [adminMsg])
 
 // ADDING SCROLL TO BOTTOM ===============================================
 
@@ -108,11 +113,11 @@ const Chat = ({location}) => {
         
         getNewMessages(socket, (err, data) => {
             console.log("new_message", data);
-      /*       let message = data;
+            /* let message = data;
             let copyMessage = [...messages];	
         //copyMessage.splice(0, 1);	
         updateMessages([...copyMessage, message]); */
-            updateMessages(data);
+           updateMessages(data);
         })
     }, [messages]);
     
@@ -249,6 +254,7 @@ const Chat = ({location}) => {
                                 chatWindow = {chatWindow}
                                 name = {name}
                                 activeUserNow = {activeUserNow}
+                                adminMsg = {adminMsg}
                             />
                         </div>
                     </main>

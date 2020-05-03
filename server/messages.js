@@ -2,7 +2,7 @@ const fs = require('fs');
 const chatHistory = 'chat.json';
 const uuid = require('uuid'); 
 const chat = JSON.parse(fs.readFileSync(chatHistory));
-
+let greeting = []
 
 function saveChat() {
     return new Promise((resolve, reject) => {
@@ -18,19 +18,21 @@ function saveChat() {
 
 function newMessage({data}){
 
-    if(data.username === "Admin") {
-        data.id = uuid.v4();
-        console.log("CHAT DATA FROM ADMIN", data)
+    data.id = uuid.v4();
+    console.log("CHAT DATA", data)
 
-        chat.push(data);
-    } else {
-        data.id = uuid.v4();
-        console.log("CHAT DATA", data)
-
-        chat.push(data);
-        saveChat();
-    }
-    return chat
+    chat.push(data);
+    saveChat();
+    
+    return chat;
 }
 
-module.exports = {newMessage};
+function statusMessages({data}) {
+    console.log("CHAT DATA FROM ADMIN", data)
+
+    greeting.push(data);
+
+    return greeting;
+}
+
+module.exports = {newMessage, statusMessages};

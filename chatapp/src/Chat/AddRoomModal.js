@@ -55,7 +55,7 @@ const AddRoomModal = ({name, socket, updateAddingRoomStatus}) => {
                 <form onSubmit={onSubmit}>
                     <input type="text" value={inputValue} placeholder="Enter new room" onChange={onChange} />
                     <span>Room name should be without any empty space</span>
-                    {errorStatus ? <p>{errorText}</p> : <p></p>}
+                    {errorStatus ? <p>{errorText}</p> : null}
                     <div className = "block__chatPage__sidebar--roomlist--modal--buttons">
                         <span onClick = {closeModal}>Close</span>
                         <button>Create</button>
