@@ -3,6 +3,7 @@ import { IoIosAddCircleOutline,IoIosChatbubbles} from 'react-icons/io';
 import {TiDelete} from 'react-icons/ti';
 import '../Chat/chat.scss';
 import AddRoomModal from '../Chat/AddRoomModal';
+import DeleteRoomModal from './DeleteRoomModal';
 
 
 
@@ -12,24 +13,29 @@ const RoomList = ({
                     name,
                     currentRoom,
                     switchRoom,
-                    removeRoom,
                     socket,
                     updateAddingRoomStatus,
                     addingRoomStatus,
+                    updateDeleteRoomStatus,
+                    deleteRoomStatus,
+                    updateChatRooms,
+                    updateRoom
                 }) => {
 
         const onSwitchRoom = (newRoom) => {
             switchRoom(newRoom)
         }
 
-        const onRemoveRoom = (roomId, room, userId) => {
-            removeRoom(roomId, room, userId)
-        }
+       
 
         const onAddingRoom = () => {
         
             updateAddingRoomStatus(true);
            // console.log(addingRoomStatus)
+        }
+
+        const onDeleteRoom = () => {
+            updateDeleteRoomStatus(true)
         }
 
     return <>
@@ -39,7 +45,7 @@ const RoomList = ({
                 { addingRoomStatus && <AddRoomModal name = {name} 
                                                     socket = {socket}
                                                     updateAddingRoomStatus = {updateAddingRoomStatus}
-                                    />}
+                />}
             </div>
             
             <ul>
@@ -66,7 +72,19 @@ const RoomList = ({
                                             {eachRoom.usersroom}
                                         </span>
                                     </button>
-                                    {eachRoom.usersroom === "General" ? null : <span onClick ={() => onRemoveRoom(eachRoom.id, eachRoom.usersroom, rooms.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
+                                    {/* {eachRoom.usersroom === "General" ? null : <span onClick ={() => onRemoveRoom(eachRoom.id, eachRoom.usersroom, rooms.id)} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>} */}
+                                    {eachRoom.usersroom === "General" ? null : 
+                                    <span onClick ={onDeleteRoom} className="block__chatPage__sidebar--roomlist--room--delete"><TiDelete size="24px" /></span>}
+                                    { deleteRoomStatus && <DeleteRoomModal socket = {socket}
+                                                                           updateDeleteRoomStatus = {updateDeleteRoomStatus}
+                                                                           eachRoom = {eachRoom}
+                                                                           rooms = {rooms}
+                                                                           currentRoom = {currentRoom}
+                                                                           name = {name}
+                                                                           updateChatRooms = {updateChatRooms}
+                                                                           updateRoom = {updateRoom}
+                                                                           chatRooms = {chatRooms}
+                />}
                                 </li>;
                         })
                     }
