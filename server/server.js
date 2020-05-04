@@ -53,7 +53,7 @@ io.on('connect', (socket) => {
             id : uuid.v4()
         }
 
-        greeting = statusMessages({data})
+        //greeting = statusMessages({data})
         //socket.to(room).emit('statusUser', statsMsg);
         
         //===========================================
@@ -112,8 +112,9 @@ io.on('connect', (socket) => {
         // 6. Sending chat history from json saved file
   
         let filteredChat = chat.filter( x => x.chatRoom === room)
-        socket.to(room).emit('statusUser', greeting);
+       
         io.in(room).emit('savedMessage', filteredChat);
+        //socket.to(room).emit('statusUser', greeting);
         
 
       /*   if (filteredChat.some(x => x.username === "Admin")) {

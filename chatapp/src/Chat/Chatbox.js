@@ -1,7 +1,6 @@
 import React from 'react';
 import { IoIosContact} from 'react-icons/io';
 import '../Chat/chat.scss';
-import { TiChevronLeft } from 'react-icons/ti';
 
 
 const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeUserNow, adminMsg}) => {
@@ -25,10 +24,10 @@ const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeU
                     if (data.username === name){
                         pointKey = "messages-"+ Math.round(Math.random() * 99999999999);
                         boxClassName = "block__chatPage__mainbar--chatbox--message--sender"
-                    } /* else if (data.username === "Admin"){
+                    } else if (data.username === "Admin"){
                         pointKey = data.id;
                         boxClassName = "block__chatPage__mainbar--chatbox--message--admin"
-                    }  */else {
+                    }  else {
                         pointKey = data.id;
                         boxClassName = "block__chatPage__mainbar--chatbox--message--incoming"
                     }
