@@ -2,7 +2,7 @@ const fs = require('fs');
 const chatHistory = 'chat.json';
 const uuid = require('uuid'); 
 const chat = JSON.parse(fs.readFileSync(chatHistory));
-//let greeting = []
+
 
 function saveChat() {
     return new Promise((resolve, reject) => {
@@ -27,12 +27,6 @@ function newMessage({data}){
     return chat;
 }
 
-function statusMessages({data}) {
-    console.log("CHAT DATA FROM ADMIN", data)
 
-   chat.push(data);
-   saveChat();
-    return chat;
-}
 
-module.exports = {newMessage, statusMessages};
+module.exports = {newMessage};

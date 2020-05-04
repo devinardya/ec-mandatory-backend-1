@@ -4,7 +4,7 @@ const uuid = require('uuid');
 
 const {userCreateUser, userAddRoom, userRemoveRoom} = require('./users');
 const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, roomRemoveUser} = require('./rooms');
-const {newMessage, statusMessages} = require('./messages');
+const {newMessage} = require('./messages');
 
 
 // ===============
@@ -49,10 +49,10 @@ io.on('connect', (socket) => {
             username: "Admin",
             content: name + " has joined " + room,
             chatRoom: room,
-            id : uuid.v4()
+            //id : uuid.v4()
         }
 
-        chat = statusMessages({data})
+        chat = newMessage({data})
         //socket.to(room).emit('statusUser', statsMsg);
         
         //===========================================
@@ -119,7 +119,8 @@ io.on('connect', (socket) => {
       if (filteredChat.some(x => x.username === "Admin")) {
             console.log("IT'S ADMIN")
             //io.in(room).emit('savedMessage', filteredChat);
-            socket.to(room).emit('statusUser', filteredChat);
+            io.in(room).emit('statusUser', filteredChat);
+            //socket.to(room).emit('statusUser', filteredChat);
         } else {
             io.in(room).emit('savedMessage', filteredChat);
         }  
@@ -179,7 +180,6 @@ io.on('connect', (socket) => {
     // when getting new message from client, saved it to file and send it back to 
     // the client to be added on the current chat
     socket.on('new_message', (data) => {
-        
         chat = newMessage({data})
         let filteredChat = chat.filter( x => x.chatRoom === data.chatRoom)
         socket.to(data.chatRoom).emit('new_message', filteredChat);
@@ -219,11 +219,12 @@ io.on('connect', (socket) => {
             username: "Admin",
             content: name + " has left room ",
             chatRoom: room,
-            id : uuid.v4()
+            //id : uuid.v4()
         }
 
-        chat = statusMessages({data})
-        socket.to(room).emit('statusUser', chat); 
+        chat = newMessage({data})
+        io.in(room).emit('statusUser', chat);
+        //socket.to(room).emit('statusUser', chat); 
 
         socket.leave(room);
         
