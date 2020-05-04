@@ -29,7 +29,6 @@ let activeUser = [];
 let userData = [];
 let roomsData = [];
 let chat = [];
-let greeting = [];
 
 
 // CONNECT TO SOCKET THEN JOIN THE DEFAULT ROOM =================================================================    
@@ -53,7 +52,7 @@ io.on('connect', (socket) => {
             id : uuid.v4()
         }
 
-        //greeting = statusMessages({data})
+        chat = statusMessages({data})
         //socket.to(room).emit('statusUser', statsMsg);
         
         //===========================================
@@ -113,17 +112,17 @@ io.on('connect', (socket) => {
   
         let filteredChat = chat.filter( x => x.chatRoom === room)
        
-        io.in(room).emit('savedMessage', filteredChat);
+        //io.in(room).emit('savedMessage', filteredChat);
         //socket.to(room).emit('statusUser', greeting);
         
 
-      /*   if (filteredChat.some(x => x.username === "Admin")) {
+      if (filteredChat.some(x => x.username === "Admin")) {
             console.log("IT'S ADMIN")
-            io.in(room).emit('savedMessage', filteredChat);
+            //io.in(room).emit('savedMessage', filteredChat);
             socket.to(room).emit('statusUser', filteredChat);
         } else {
             io.in(room).emit('savedMessage', filteredChat);
-        }  */
+        }  
          
          //console.log("FILTEREDCHAT", filteredChat)
          
@@ -223,8 +222,8 @@ io.on('connect', (socket) => {
             id : uuid.v4()
         }
 
-        greeting = statusMessages({data})
-        socket.to(room).emit('statusUser', greeting); 
+        chat = statusMessages({data})
+        socket.to(room).emit('statusUser', chat); 
 
         socket.leave(room);
         
