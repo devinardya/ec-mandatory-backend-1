@@ -89,6 +89,22 @@
         width: 100%;
     }
 
+    .block__chatPage__sidebar--roomlist--modal--div{
+        @include flex-column(center, center);
+        width: 100%;
+
+        .block__chatPage__sidebar--roomlist--modal--formcontainer-span {
+            font-size: 16px;
+            margin-bottom: 20px;
+
+            .text-span {
+                font-weight: bold;
+                color: $color-text-dark2;
+                font-size: 16px;
+            }
+        }
+    }
+
     input {
         margin-bottom: 10px;
         width: 70%;
@@ -124,6 +140,8 @@
         color: $color-text-dark;
         margin-bottom: 20px;
     }
+
+    
 
     .block__chatPage__sidebar--roomlist--modal--buttons {
         @include flex-row(center, center );

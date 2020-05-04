@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
-import '../Chat/addroommodal.scss'
+import '../Chat/roomModal.scss'
 import { Redirect } from 'react-router-dom';
 
 
@@ -57,7 +57,7 @@ const AddRoomModal = ({name, socket, updateAddingRoomStatus}) => {
                     <span>Room name should be without any empty space</span>
                     {errorStatus ? <p>{errorText}</p> : null}
                     <div className = "block__chatPage__sidebar--roomlist--modal--buttons">
-                        <span onClick = {closeModal}>Close</span>
+                        <span onClick = {closeModal}>Cancel</span>
                         <button>Create</button>
                     </div>
                 </form>

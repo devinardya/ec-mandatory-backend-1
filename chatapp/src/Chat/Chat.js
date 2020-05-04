@@ -19,11 +19,11 @@ const Chat = ({location}) => {
     const [messages, updateMessages] = useState([]);
     const [currentRoom, updateRoom] = useState(defaultRoom);
     const [chatRooms, updateChatRooms] =  useState([]);
-    //const [adminMsg, updateAdminMsg] = useState([]);
     const [activeUserNow, updateActiveUsersNow] = useState([])
     const [users, updateUsers] = useState([]);
     const [loginStatus, updateLoginStatus] = useState(true);
     const [addingRoomStatus, updateAddingRoomStatus] = useState(false);
+    const [deleteRoomStatus, updateDeleteRoomStatus] = useState(false);
     let name = location.state.user;
     const chatWindow = useRef(null);
     const PORT = 'localhost:3000';
@@ -141,38 +141,6 @@ const Chat = ({location}) => {
         }
     };
 
-// REMOVING ROOMS ===============================================
-
-    const removeRoom = (roomId, room, userId) => {
-
-        console.log("REMOVE ROOM")
-        let copyData = [...chatRooms];
-        console.log("USERID", userId)
-
-        socket.emit('remove_room', ({name, room, roomId, userId}))
-        
-        let removeData = copyData.map( eachChatRoom => {
-            
-           if(eachChatRoom.username === name) {
-               console.log("username match")
-                const listIndex = eachChatRoom.usersroom.findIndex (x => x.id === roomId);
-                console.log(listIndex)
-                let copyDataChatRoom = [...eachChatRoom.usersroom]
-                copyDataChatRoom.splice(listIndex, 1)
-                console.log("result", copyDataChatRoom)
-                eachChatRoom.usersroom = copyDataChatRoom;
-            }
-
-            return eachChatRoom;
-        });
-        console.log(removeData)
-        updateChatRooms(removeData) 
-
-        if(room === currentRoom) {
-            updateRoom("General");
-        }
-       
-    }
  
 // ADDING & SENDING NEW MESSAGES TO SERVER ===============================================
 
@@ -237,10 +205,13 @@ const Chat = ({location}) => {
                                     name = {name}
                                     currentRoom = {currentRoom}
                                     switchRoom = {switchRoom}
-                                    removeRoom = {removeRoom}
                                     socket = {socket}
                                     updateAddingRoomStatus = {updateAddingRoomStatus}
                                     addingRoomStatus = {addingRoomStatus}
+                                    updateDeleteRoomStatus = {updateDeleteRoomStatus}
+                                    deleteRoomStatus = {deleteRoomStatus}
+                                    updateChatRooms = {updateChatRooms}
+                                    updateRoom = {updateRoom}
                                 />
                             </div>
                             
