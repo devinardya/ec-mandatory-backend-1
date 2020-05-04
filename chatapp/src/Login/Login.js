@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Redirect } from 'react-router-dom';
 import '../Login/login.scss';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import logoIcon from '../Design/logo.svg';
 import { MdCheckCircle, MdCancel } from "react-icons/md";
 import { IoMdLogIn } from 'react-icons/io';
@@ -84,24 +85,29 @@ const Login = () => {
     }
 
 
-    return <div className = "block__loginPage">
-                <div className = "block__loginPage--form">
-                    <div className="block__loginPage--form-top">
-                        <figure className="block__loginPage--form-top--logo">
-                            <img src={logoIcon} alt="bercakap logo" />
-                        </figure>
-                        <h5>Welcome to Kongko. Please log in to continue</h5>
-                    </div>
-                    <form className="block__loginPage--form-bottom" onSubmit= {getSubmit} >
-                            <input className="block__loginPage--input-box" style={newcolor} type="text" placeholder="Username" onChange={onChange} value={username}/>
-                            <button className="block__loginPage--login-button"><IoMdLogIn className="block__loginPage--login-button--icons" size="40px"/></button> 
-                    </form>
-                    <div className = "block__loginPage--form--authorization">
-                        <p className="block__loginPage--form--authorization__warning" style={warncolor} > {validateIcon1} Username have to be between 1 to 12 characters without empty space.</p>
-                        <p className="block__loginPage--form--authorization__warning" style={warncolor2} > {validateIcon2} Username can only contains uppercase, lowercase, hypen (-), underscore (_), and numbers.</p>
+    return <HelmetProvider>
+                <Helmet>
+                    <title>Kongko Chat - Login</title>
+                </Helmet>
+                <div className = "block__loginPage">
+                    <div className = "block__loginPage--form">
+                        <div className="block__loginPage--form-top">
+                            <figure className="block__loginPage--form-top--logo">
+                                <img src={logoIcon} alt="bercakap logo" />
+                            </figure>
+                            <h5>Welcome to Kongko. Please log in to continue</h5>
+                        </div>
+                        <form className="block__loginPage--form-bottom" onSubmit= {getSubmit} >
+                                <input className="block__loginPage--input-box" style={newcolor} type="text" placeholder="Username" onChange={onChange} value={username}/>
+                                <button className="block__loginPage--login-button"><IoMdLogIn className="block__loginPage--login-button--icons" size="40px"/></button> 
+                        </form>
+                        <div className = "block__loginPage--form--authorization">
+                            <p className="block__loginPage--form--authorization__warning" style={warncolor} > {validateIcon1} Username have to be between 1 to 12 characters without empty space.</p>
+                            <p className="block__loginPage--form--authorization__warning" style={warncolor2} > {validateIcon2} Username can only contains uppercase, lowercase, hypen (-), underscore (_), and numbers.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </HelmetProvider>
 }
 
 export default Login;
