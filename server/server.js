@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const uuid = require('uuid'); 
+
 
 const {userCreateUser, userAddRoom, userRemoveRoom} = require('./users');
 const {roomsCreateRoom, roomsAddUsers, roomsAddActive, roomsRemoveActive, roomsInitiateRooms, roomRemoveUser} = require('./rooms');
@@ -31,11 +31,13 @@ let roomsData = [];
 let chat = [];
 
 
+
 // CONNECT TO SOCKET THEN JOIN THE DEFAULT ROOM =================================================================    
 
-io.on('connect', (socket) => {
+io.on('connection', (socket) => {
     console.log('0. User connected to server');
-    
+
+
     //io.emit('message', chat);
 
     // getting an emit from client.
@@ -115,14 +117,17 @@ io.on('connect', (socket) => {
         //io.in(room).emit('savedMessage', filteredChat);
         //socket.to(room).emit('statusUser', greeting);
         
-
+       
+        let filterChatWithoutAdmin = filteredChat.filter(x => x.username !== "Admin")
+       
       if (filteredChat.some(x => x.username === "Admin")) {
             console.log("IT'S ADMIN")
             //io.in(room).emit('savedMessage', filteredChat);
             io.in(room).emit('statusUser', filteredChat);
-            //socket.to(room).emit('statusUser', filteredChat);
         } else {
-            io.in(room).emit('savedMessage', filteredChat);
+           
+            //io.in(room).emit('savedMessage', filteredChat);
+            io.in(room).emit('savedMessage', filterChatWithoutAdmin)
         }  
          
          //console.log("FILTEREDCHAT", filteredChat)
@@ -238,7 +243,7 @@ io.on('connect', (socket) => {
     socket.on('disconnect', () => {
         io.emit('user disconnected');
         console.log("user has disconnected")
-        
+
     });
 });
 
