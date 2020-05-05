@@ -30,11 +30,16 @@ const Chat = ({location}) => {
     
 // SENDING JOINED ROOM & USER NAME TO SERVER ===============================================
 
+
     useEffect( () => {
         // Starting a socket for the user
         socket = io(PORT);
       
         console.log("0.setting socket");
+        socket.on('connection', (socket), function(){
+            console.log("CONNECTED") 
+        })
+
     }, [PORT]);
 
  
@@ -49,6 +54,8 @@ const Chat = ({location}) => {
     }, [name, currentRoom]);
 
 // GETTING USER DATA, CHAT HISTORY, CURRENT ROOM DATA FROM SERVER ===============================================
+
+   
 
     useEffect( () => {
 
