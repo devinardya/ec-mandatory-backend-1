@@ -109,7 +109,7 @@ io.on('connection', (socket) => {
   
         let filteredChat = chat.filter( x => x.chatRoom === room)
         let filterChatWithoutAdmin = filteredChat.filter(x => x.username !== "Admin")
-       
+
       if (filteredChat.some(x => x.username === "Admin")) {
             //console.log("IT'S ADMIN")
             //io.in(room).emit('savedMessage', filteredChat);

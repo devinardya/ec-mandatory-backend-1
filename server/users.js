@@ -60,8 +60,6 @@ function userAddRoom({name, room, roomsData}){
     // Does the room already exist for this user? 
     roomExists = currentRooms.findIndex(x => x.usersroom.toLowerCase()  === room.toLowerCase());
 
-    console.log(/* currentUser, currentRooms,  */roomExists, room)
-
     if (roomExists === -1){
         // -1 === no matches 
         // add the room for the user

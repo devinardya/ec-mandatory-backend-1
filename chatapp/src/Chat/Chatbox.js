@@ -4,7 +4,7 @@ import { IoIosContact} from 'react-icons/io';
 import '../Chat/chat.scss';
 
 
-const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeUserNow, adminMsg}) => {
+const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeUserNow}) => {
 
     const onSendChange = (e) => {
         let value = e.target.value;
@@ -25,9 +25,9 @@ const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeU
                     if (data.username === name){
                         pointKey = "messages-"+ uuid();
                         boxClassName = "block__chatPage__mainbar--chatbox--message--sender"
-                        
+           
                         return <div className={boxClassName} key={pointKey}>
-                                    {activeUserNow.find(y => y === data.username)
+                                    {activeUserNow.some(y => y.username === data.username)
                                         ? <span className="block__chatPage__mainbar--chatbox--message--image--active">< IoIosContact size="35px" color="white"/></span>
                                         : <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span>
                                     }        
@@ -54,7 +54,7 @@ const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeU
                         pointKey = data.id;
                         boxClassName = "block__chatPage__mainbar--chatbox--message--incoming"
                         return <div className={boxClassName} key={pointKey}>
-                                    {activeUserNow.find(y => y === data.username)
+                                    {activeUserNow.some(y => y.username === data.username)
                                         ? <span className="block__chatPage__mainbar--chatbox--message--image--active">< IoIosContact size="35px" color="white"/></span>
                                         : <span className="block__chatPage__mainbar--chatbox--message--image">< IoIosContact size="35px" color="white"/></span>
                                     }        
