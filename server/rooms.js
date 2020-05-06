@@ -45,7 +45,7 @@ function roomsCreateRoom({room}){
         roomsList.push(roomData);
         saveRoom();
         console.log("A new room: ", room, " was added.");
-        console.log(roomsList)
+        //console.log(roomsList)
         
     }
     return roomsList;
@@ -88,12 +88,9 @@ function roomsAddUsers({name, room, userData}){
     let userExists;
 
     // Find the current room
-    console.log('roomslist ', roomsList)
-    console.log('room ', room)
+    
     currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase());
-    console.log('my user data', userData)
-    console.log('current Room', currentRoom)
-    console.log('current Room users', currentRoom.username);
+    
     // Find rooms current users
     currentUsers = currentRoom.username;
     // Does the user already exist in this room? 
@@ -129,16 +126,13 @@ function roomsAddActive({name, room, userData}){
     // Find the current room
     currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
-    console.log("CURRENTROOM", currentRoom);
     currentUsers = currentRoom.activeUsers;
     // Does the user already exist in this room? 
-    console.log("CURRENTUSERS", currentUsers);
     userExists = currentUsers.some( x => x.username === name)
-    console.log("USEREXIST", userExists)
+    
     if (!userExists){
         // -1 === no matches 
         // add the user for the room
-        console.log(userData)
         let thisuser = userData.findIndex(x => x.username === name);
 
         userData = { username : userData[thisuser].username,  
@@ -146,7 +140,6 @@ function roomsAddActive({name, room, userData}){
            }
         currentUsers.push(userData);
         saveRoom();
-        console.log(roomsList)
         console.log("A new active user: ", name, " was added to room ", room)
        
     } else {
@@ -171,10 +164,8 @@ function roomsRemoveActive({name, room}){
     currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     currentUsers = currentRoom.activeUsers;
-    console.log("CURRENT USER", currentUsers)
     // Does the user already exist in this room? 
     userExists = currentUsers.findIndex(x => x.username === name);
-    console.log("USEREXIST", userExists)
     if (userExists === -1){
         // -1 === no matches 
         
@@ -196,12 +187,8 @@ function roomRemoveUser({room, userId, roomsData}) {
     let copyRoomData = [...roomsData];
 
     copyRoomData.map( eachChatRoom => {
-            console.log("EACH CHAT ROOM", eachChatRoom)
         if(eachChatRoom.usersroom === room) {
-            console.log("room match")
-            
              const listIndex = eachChatRoom.username.findIndex (x => x.id === userId);
-             console.log(listIndex)
              let copyDataChatRoom = [...eachChatRoom.username]
              copyDataChatRoom.splice(listIndex, 1)
              console.log("result", copyDataChatRoom)
@@ -212,8 +199,6 @@ function roomRemoveUser({room, userId, roomsData}) {
          }
          
      });
-     console.log("DATA BEFORE RETURN", copyRoomData)
-       
 
     return copyRoomData;
 }

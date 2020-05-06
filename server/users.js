@@ -65,12 +65,7 @@ function userAddRoom({name, room, roomsData}){
     if (roomExists === -1){
         // -1 === no matches 
         // add the room for the user
-        console.log("RoomsData", roomsData)
         let thisroom = roomsData.findIndex(x => x.usersroom.toLowerCase() === room.toLowerCase());
-
-        console.log("the room: ", thisroom)
-        console.log("the room: ", roomsData)
-        console.log('roar ', room.toLowerCase())
 
         roomData = { usersroom  : roomsData[thisroom].usersroom ,  
                     id : roomsData[thisroom].id
@@ -96,20 +91,15 @@ function userRemoveRoom({name, roomId, userData}) {
     copyData.map(eachUser => {
 
         if(eachUser.username === name) {
-            console.log("username match")
              const listIndex = eachUser.usersroom.findIndex (x => x.id === roomId);
-             console.log(listIndex)
-             let copyDataChatRoom = [...eachUser.usersroom]
-             copyDataChatRoom.splice(listIndex, 1)
-             console.log("result", copyDataChatRoom)
+             let copyDataChatRoom = [...eachUser.usersroom];
+             copyDataChatRoom.splice(listIndex, 1);
              eachUser.usersroom = copyDataChatRoom;
 
              copyData.push(copyDataChatRoom);
              saveUser();
          }
     })
-
-    console.log("BEFORE RETURN", copyData);
     return copyData;
 
 }

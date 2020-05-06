@@ -37,14 +37,10 @@ let chat = [];
 io.on('connection', (socket) => {
     console.log('0. User connected to server');
 
-
-    //io.emit('message', chat);
-
     // getting an emit from client.
     // handling "join" emit
     socket.on('join', ({name, room}) => {
      
-        //const {error, user} = addUser({ id:socket.id, name, room})
         console.log("1. User joining chat. User ", name, " in room ",room)
 
         let data = {
@@ -55,7 +51,6 @@ io.on('connection', (socket) => {
         }
 
         chat = newMessage({data})
-        //socket.to(room).emit('statusUser', statsMsg);
         
         //===========================================
         //===========================================
@@ -82,7 +77,7 @@ io.on('connection', (socket) => {
         // 3. add active user to the room
         console.log('3. Adding active user to room ', room)
         activeUser = roomsAddActive({name, room, userData});
-        console.log('my current roomsdata', roomsData)
+        //console.log('my current roomsdata', roomsData)
  
         //===========================================
         //===========================================
@@ -100,9 +95,9 @@ io.on('connection', (socket) => {
 
         socket.emit('updaterooms', userData);
         
-        console.log("active users now", activeUser);
+        //console.log("active users now", activeUser);
         io.in(room).emit('activeUsers', activeUser);
-        console.log(roomsData)
+        //console.log(roomsData)
         io.in(room).emit('updateUser', roomsData);
 
         
@@ -113,15 +108,10 @@ io.on('connection', (socket) => {
         // 6. Sending chat history from json saved file
   
         let filteredChat = chat.filter( x => x.chatRoom === room)
-       
-        //io.in(room).emit('savedMessage', filteredChat);
-        //socket.to(room).emit('statusUser', greeting);
-        
-       
         let filterChatWithoutAdmin = filteredChat.filter(x => x.username !== "Admin")
        
       if (filteredChat.some(x => x.username === "Admin")) {
-            console.log("IT'S ADMIN")
+            //console.log("IT'S ADMIN")
             //io.in(room).emit('savedMessage', filteredChat);
             io.in(room).emit('statusUser', filteredChat);
         } else {
@@ -130,28 +120,23 @@ io.on('connection', (socket) => {
             io.in(room).emit('savedMessage', filterChatWithoutAdmin)
         }  
          
-         //console.log("FILTEREDCHAT", filteredChat)
-         
     }); 
 
 // ADDING ROOM =================================================================    
 
     socket.on('addingRoom', ({name, room}, cb) => {
 
-        console.log("ROOM DATA BEFORE ADDING", roomsData)
+        //console.log("ROOM DATA BEFORE ADDING", roomsData)
         let checkRoomList = roomsData.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
-        console.log("check room list", checkRoomList)
+        //console.log("check room list", checkRoomList)
         if (checkRoomList) {
             let checkstatus;
             userData.map( x => {
-                
-                console.log("ENTER HERE")
-                console.log("X USERNAME, USERNAME", x.username, name)
+                //console.log("X USERNAME, USERNAME", x.username, name)
                 if (x.username === name) {
-                    console.log("found the same username")
-                    console.log("X.USERROOM", x.usersroom)
+                    //console.log("X.USERROOM", x.usersroom)
                     checkstatus = x.usersroom.some(x => x.usersroom.toLowerCase() === room.toLowerCase())
-                    console.log("CHECKSTATUS", checkstatus);
+                    //console.log("CHECKSTATUS", checkstatus);
                 }
             })
 
@@ -159,7 +144,7 @@ io.on('connection', (socket) => {
                 cb({error: "ERROR: room is already exists!"});
             } else {
                 userData = userAddRoom({name, room, roomsData});
-                console.log("my new userdata after adding a room ", userData)
+                //console.log("my new userdata after adding a room ", userData)
                 roomsData = roomsAddUsers({name, room, userData});
                 socket.emit('allRoomList', userData);
             }
@@ -171,7 +156,7 @@ io.on('connection', (socket) => {
             roomsData = roomsCreateRoom({room});
 
             userData = userAddRoom({name, room, roomsData});
-            console.log("my new userdata after adding a room ", userData)
+            //console.log("my new userdata after adding a room ", userData)
             roomsData = roomsAddUsers({name, room, userData});
             socket.emit('allRoomList', userData);
        }
@@ -201,13 +186,13 @@ io.on('connection', (socket) => {
         })
 
         userData = userRemoveRoom({name, roomId, userData});
-        console.log("after remove room data from USERDATA", userData);
+        //console.log("after remove room data from USERDATA", userData);
 
         roomsData = roomRemoveUser({room, userId, roomsData});
-        console.log("after remove user data from ROOMDATA", roomsData);
+        //console.log("after remove user data from ROOMDATA", roomsData);
 
         activeUser =  roomsRemoveActive({name, room})
-        console.log("ACTIVE USERS AFTER LEAVING", activeUser)
+        //console.log("ACTIVE USERS AFTER LEAVING", activeUser)
         socket.to(room).emit('activeUsers', activeUser);
 
         socket.emit('allRoomList', userData);
@@ -234,7 +219,7 @@ io.on('connection', (socket) => {
         socket.leave(room);
         
         activeUser =  roomsRemoveActive({name, room})
-        console.log("ACTIVE USERS AFTER LEAVING", activeUser)
+        //console.log("ACTIVE USERS AFTER LEAVING", activeUser)
         socket.to(room).emit('activeUsers', activeUser);
     });
    
