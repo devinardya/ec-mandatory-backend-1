@@ -47,8 +47,7 @@ const Chat = ({location}) => {
     useEffect( () => {
         console.log("1. Joining a channel")
         let room = currentRoom;
-        console.log(room)
-
+       
         socket.emit('join', {name, room});
         
     }, [name, currentRoom]);
@@ -60,17 +59,14 @@ const Chat = ({location}) => {
     useEffect( () => {
 
         updateUser( socket, (err, userlist) => {
-            console.log(userlist)
             updateUsers(userlist);
         });
 
         updateCurrentRoom( socket, (err, current_room) => {
-            console.log("update room", current_room);
             updateChatRooms(current_room)
             });
 
         getChatHistory( socket, (err, chatHistory) => {
-            console.log("savedMessage", chatHistory);
             updateMessages(chatHistory); 
         });
 
@@ -79,9 +75,7 @@ const Chat = ({location}) => {
 // GETTING ACTIVE USER DATA FROM SERVER ===============================================
 
     useEffect( () => {
-        console.log("ACTIVE USER")
         getActiveUsers(socket, (err, data) => {
-            console.log("active users now", data)
             updateActiveUsersNow(data)
         })
     }, [])
@@ -89,12 +83,8 @@ const Chat = ({location}) => {
 // GETTING INCOMING USER DATA FROM SERVER ===============================================
 
     useEffect(() => {
-        console.log("STATUS USER")
-        //console.log(messages)
         getStatusUser(socket, (err, data) => {
-            console.log(data);
             updateMessages(data);
-   
         });
     }, [messages])
 
@@ -110,10 +100,7 @@ const Chat = ({location}) => {
 // GETTING NEW MESSAGES FROM SERVER ===============================================
 
     useEffect( () => {
-        console.log("getting new mesasage from the server")
-        
         getNewMessages(socket, (err, data) => {
-            console.log("new_message", data);
             updateMessages(data);
         })
     }, [messages]);
@@ -122,9 +109,7 @@ const Chat = ({location}) => {
 
 
     useEffect( () => {
-        console.log("GETTING ALL CHAT ROOM")
         getAllRoomsList(socket, (err, data) => {
-            console.log("all chat rooms", data)
             updateChatRooms(data)
         })
     }, [])
@@ -142,14 +127,12 @@ const Chat = ({location}) => {
 // ADDING & SENDING NEW MESSAGES TO SERVER ===============================================
 
     const onChange = (value) => {
-        //let value = e.target.value;
         updateInput(value);
     }
 
     // sending message
     const onSubmit = (input) => {
-        //e.preventDefault();
-   
+
         socket.emit("new_message",{
             username: name,
             content: input,
@@ -158,7 +141,6 @@ const Chat = ({location}) => {
         updateInput("");
         let message = {username: name, content: input, chatRoom: currentRoom};
         let copyMessage = [...messages];	
-        //copyMessage.splice(0, 1);	
         updateMessages([...copyMessage, message]);
     }
 

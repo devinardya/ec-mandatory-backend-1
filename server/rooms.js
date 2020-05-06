@@ -22,8 +22,6 @@ function roomsCreateRoom({room}){
     let roomExists = false;
     let copyRoom = room.toLowerCase();
 
-
-
     roomsList.map(eachRoom => {
         let copyFromArray = eachRoom.usersroom.toLowerCase();
         if (copyFromArray === copyRoom){
@@ -168,8 +166,6 @@ function roomsRemoveActive({name, room}){
     userExists = currentUsers.findIndex(x => x.username === name);
     if (userExists === -1){
         // -1 === no matches 
-        
-      
         // do nothing
 
     } else {
@@ -190,10 +186,8 @@ function roomRemoveUser({room, userId, roomsData}) {
         if(eachChatRoom.usersroom === room) {
              const listIndex = eachChatRoom.username.findIndex (x => x.id === userId);
              let copyDataChatRoom = [...eachChatRoom.username]
-             copyDataChatRoom.splice(listIndex, 1)
-             console.log("result", copyDataChatRoom)
+             copyDataChatRoom.splice(listIndex, 1);
              eachChatRoom.username = copyDataChatRoom;
-  
              copyRoomData.push(copyDataChatRoom);
              saveRoom();  
          }

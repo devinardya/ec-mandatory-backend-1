@@ -19,9 +19,6 @@ const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeU
     return <>
             <div className="block__chatPage__mainbar--chatbox" ref={chatWindow}  >
                 {messages.length !== 0 ? messages.map(data => {
-
-                    console.log(data)
-                    console.log('current name ', name)
                     let pointKey;
                     let boxClassName;
                    
@@ -42,25 +39,18 @@ const Chatbox = ({onSubmit, messages, onChange, input, chatWindow, name, activeU
                                 </div> 
 
                     } else if (data.username === "Admin"){
-                        //pointKey = data.id;
-                        console.log("ITS ADMIN")
-                        //boxClassName = "block__chatPage__mainbar--chatbox--message--admin"
                         let checkMsg = data.content.includes(name)
                         if (!checkMsg) {
-                            console.log("NOT USER")
                             return <div className ="block__chatPage__mainbar--chatbox--message--admin" key= {data.id}>
                                         <div className="block__chatPage__mainbar--chatbox--message--blockText" >
                                             <p className="block__chatPage__mainbar--chatbox--message--text">{data.content}</p>
                                         </div>
                                 </div>
                         } else {
-                            console.log("USER")
                             return null;
                         }
                         
                     } else {
-                        console.log("PRINT THIS TOO")
-                        console.log('my data', data)
                         pointKey = data.id;
                         boxClassName = "block__chatPage__mainbar--chatbox--message--incoming"
                         return <div className={boxClassName} key={pointKey}>

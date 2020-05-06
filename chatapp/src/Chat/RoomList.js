@@ -26,8 +26,6 @@ const RoomList = ({
             switchRoom(newRoom)
         }
 
-       
-
         const onAddingRoom = () => {
         
             updateAddingRoomStatus(true);

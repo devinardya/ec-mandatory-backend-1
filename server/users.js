@@ -95,7 +95,6 @@ function userRemoveRoom({name, roomId, userData}) {
              let copyDataChatRoom = [...eachUser.usersroom];
              copyDataChatRoom.splice(listIndex, 1);
              eachUser.usersroom = copyDataChatRoom;
-
              copyData.push(copyDataChatRoom);
              saveUser();
          }

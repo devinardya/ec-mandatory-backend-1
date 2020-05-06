@@ -23,7 +23,6 @@ const AddRoomModal = ({name, socket, updateAddingRoomStatus}) => {
         let room= inputValue
         socket.emit('addingRoom', {name, room}, (error) => {
             if(error) {
-                console.log(error);
                 updateErrorText(error.error);
                 updateErrorStatus(true);
                 updateModalStatus(true); 

@@ -22,28 +22,22 @@ const DeleteRoomModal = ({
 
 
     const onRemoveRoom = (roomId, room, userId) => {
-        
-        console.log("REMOVE ROOM")
+   
         let copyData = [...chatRooms];
-        console.log("USERID", userId)
 
         socket.emit('remove_room', ({name, room, roomId, userId}))
         
         let removeData = copyData.map( eachChatRoom => {
             
            if(eachChatRoom.username === name) {
-               console.log("username match")
                 const listIndex = eachChatRoom.usersroom.findIndex (x => x.id === roomId);
-                console.log(listIndex)
-                let copyDataChatRoom = [...eachChatRoom.usersroom]
-                copyDataChatRoom.splice(listIndex, 1)
-                console.log("result", copyDataChatRoom)
+                let copyDataChatRoom = [...eachChatRoom.usersroom];
+                copyDataChatRoom.splice(listIndex, 1);
                 eachChatRoom.usersroom = copyDataChatRoom;
             }
 
             return eachChatRoom;
         });
-        console.log(removeData)
         updateChatRooms(removeData) 
 
         updateDeleteRoomStatus(false);
