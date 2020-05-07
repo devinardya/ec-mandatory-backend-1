@@ -1,10 +1,24 @@
-const fs = require('fs');
+/* const fs = require('fs');
 const allRooms = 'room.json';
 const uuid = require('uuid'); 
-const roomsList = JSON.parse(fs.readFileSync(allRooms));
+const roomsList = JSON.parse(fs.readFileSync(allRooms)); */
+
+//const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+// Connection URL
+//const url = 'mongodb://localhost:27017';
+
+// Database Name
+//const dbName = 'chatapp';
+
+// Create a new MongoClient
+//const client = new MongoClient(url);
+
+const uuid = require('uuid'); 
 
 // Save data to JSON
-function saveRoom() {
+/* function saveRoom() {
     return new Promise((resolve, reject) => {
         fs.writeFile(allRooms, JSON.stringify(roomsList), function (err) {
             if (err) {
@@ -14,15 +28,102 @@ function saveRoom() {
             }
         });
     });
-};
+}; */
+let resultData = []
+
+function saveRoom(db, data){	
+
+    console.log("TRYING TO SAVE NEW ROOM", data)
+    
+    return new Promise( (resolve, reject) => {
+        db.collection('rooms').insertOne(data, (err,result)=>{
+            if(err){
+                console.log("not inserted", err);
+                reject()
+            }else {
+                console.log("inserted");
+                resolve();
+            }
+            
+            //console.log("result", result)
+        });
+    })
+
+}
+
+
+const roomsList = function(db) {
+    // Get the documents collection
+    const collection = db.collection('rooms');
+    // Find some documents
+    
+    collection.find({}).toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log("Found the following records");
+      console.log("DOCS", docs)
+      //callback(docs);
+      resultData.push(docs)
+      //return resultData = docs;
+    });
+    return resultData;
+   
+  }
+
+
+function updateRoomByName(db, roomName, updatedData) {
+   
+    console.log("room name", roomName.usersroom)
+    console.log("UPDATEDATAUSER", updatedData)
+    let myquery = { usersroom: roomName.usersroom };
+    let newvalues = { $push: {username: updatedData} };
+
+    return new Promise((resolve, reject) => {
+        db.collection("rooms").updateOne(myquery, newvalues, { upsert: true }, function(err, res) {
+            if (err) {
+                reject();
+            }else {
+                console.log("1 document updated");
+                resolve();
+            }
+            
+        });
+
+       
+    });
+
+}
+
+function updateRoomByActive(db, roomName, updatedData) {
+    console.log("room name", roomName.usersroom)
+    console.log("UPDATEDATAACTIVE", updatedData)
+    let myquery = {usersroom: roomName.usersroom };
+    let newvalues = { $push: {activeUsers: updatedData} };
+
+    return new Promise((resolve, reject) => {
+        db.collection("rooms").updateOne(myquery, newvalues, { upsert: true }, function(err, res) {
+            if (err) {
+                reject();
+            }else {
+                resolve();
+                console.log("1 document updated",);
+            }
+            
+        });
+        
+    });
+
+}
+
+
 
 
 // Create a new room
-function roomsCreateRoom({room}){
+function roomsCreateRoom({db, room}){
     let roomExists = false;
     let copyRoom = room.toLowerCase();
 
-    roomsList.map(eachRoom => {
+    
+    resultData.map(eachRoom => {
         let copyFromArray = eachRoom.usersroom.toLowerCase();
         if (copyFromArray === copyRoom){
             // remember room already exist
@@ -40,21 +141,26 @@ function roomsCreateRoom({room}){
                      id : uuid.v4(),
                      activeUsers : []
                     }
-        roomsList.push(roomData);
-        saveRoom();
+
+        resultData.push(roomData);
+        //saveRoom();
+        //saveRoom(roomData)
+        saveRoom(db, roomData);
         console.log("A new room: ", room, " was added.");
         //console.log(roomsList)
         
     }
-    return roomsList;
+    return resultData;
 }
 
 // Create the general room
-function roomsInitiateRooms(){
+function roomsInitiateRooms({db}){
+    console.log("DID IT GET HERE? TO INITIATE GENERAL")
+
     let roomExists = false;
     let copyFromArray;
     let room = 'General';
-    roomsList.map(eachRoom => {
+    resultData.map(eachRoom => {
         copyFromArray = eachRoom.usersroom.toLowerCase();	        
         if (copyFromArray === room.toLowerCase()){
             // remember room already exist
@@ -64,30 +170,33 @@ function roomsInitiateRooms(){
 
     if (roomExists === true) {
         // General room already exists. Do nothing
-        return roomsList;
+        return resultData;
     } else {
         roomData = { username : [],  
                      usersroom : room,
                      id : uuid.v4(),
                      activeUsers : []
                     }
-        roomsList.push(roomData);
-        saveRoom();
+        //roomsList.push(roomData);
+        //saveRoom();
+        resultData.push(roomData);
+        saveRoom(db, roomData);
         console.log("A new room: ", room, " was added.")
-        return roomsList;
+        return resultData;
+       
     }
 }
 
 // Add rooms for a user
-function roomsAddUsers({name, room, userData}){
+function roomsAddUsers({db, name, room, userData}){
 
     let currentRoom;
     let currentUsers;
     let userExists;
 
     // Find the current room
-    
-    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase());
+    console.log("RESULTDATA", resultData)
+    currentRoom = resultData.find(x => x.usersroom.toLowerCase() === room.toLowerCase());
     
     // Find rooms current users
     currentUsers = currentRoom.username;
@@ -100,10 +209,11 @@ function roomsAddUsers({name, room, userData}){
         let thisuser = userData.findIndex(x => x.username === name);
 
         userData = { username : userData[thisuser].username,  
-                    id : userData[thisuser].id
+                     id : userData[thisuser].id
            }
         currentUsers.push(userData);
-        saveRoom();
+        //saveRoom(db, resultData);
+        updateRoomByName(db, currentRoom, userData)
         console.log("A new user: ", name, " was added to room ", room)
     } else {
         // there is a room at the index roomExists
@@ -111,18 +221,18 @@ function roomsAddUsers({name, room, userData}){
         console.log("No new users was added to the room ", room)
     }
 
-    return roomsList;
+    return resultData;
 }
 
 // Add active user to a room
-function roomsAddActive({name, room, userData}){
+function roomsAddActive({db, name, room, userData}){
 
     let currentRoom;
     let currentUsers;
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
+    currentRoom = resultData.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     currentUsers = currentRoom.activeUsers;
     // Does the user already exist in this room? 
@@ -137,7 +247,7 @@ function roomsAddActive({name, room, userData}){
                     id : userData[thisuser].id
            }
         currentUsers.push(userData);
-        saveRoom();
+        updateRoomByActive(db, currentRoom,userData)
         console.log("A new active user: ", name, " was added to room ", room)
        
     } else {
@@ -152,14 +262,14 @@ function roomsAddActive({name, room, userData}){
 
 
 // Remove active user from a room
-function roomsRemoveActive({name, room}){
+function roomsRemoveActive({db, name, room}){
 
     let currentRoom;
     let currentUsers;
     let userExists;
 
     // Find the current room
-    currentRoom = roomsList.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
+    currentRoom = resultData.find(x => x.usersroom.toLowerCase() === room.toLowerCase())
     // Find rooms current users
     currentUsers = currentRoom.activeUsers;
     // Does the user already exist in this room? 
@@ -195,6 +305,8 @@ function roomRemoveUser({room, userId, roomsData}) {
      });
 
     return copyRoomData;
+
+    
 }
 
 

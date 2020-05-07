@@ -26,7 +26,7 @@ const Chat = ({location}) => {
     const [deleteRoomStatus, updateDeleteRoomStatus] = useState(false);
     let name = location.state.user;
     const chatWindow = useRef(null);
-    const PORT = 'localhost:3000';
+    const PORT = 'localhost:8090';
     
 // SENDING JOINED ROOM & USER NAME TO SERVER ===============================================
 
